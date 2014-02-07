@@ -1,4 +1,4 @@
-geost
+Geost
 =====
 
-The geost constraint for Choco3
+The Geost constraint for Choco3
