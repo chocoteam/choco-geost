@@ -202,7 +202,7 @@ public class Tutorial {
             Constraint geost = geost(this.dim, obj2, sb2, ectr2);
             solver.post(geost);
             //post the geost constraint to the choco problem
-            solver.set((ISF.random(solver.retrieveIntVars(), 1)));
+            solver.set((ISF.random_bound(solver.retrieveIntVars(), 1)));
             solver.findAllSolutions();
             Assert.assertEquals(solver.getMeasures().getSolutionCount(), 9828, "number of solutions");
         }
@@ -238,7 +238,7 @@ public class Tutorial {
 
             Constraint geost = geost(this.dim, rp.getObjects(), rp.getSBoxes(), ectr);
             m.post(geost);
-            m.set(ISF.random(m.retrieveIntVars(), seed));
+            m.set(ISF.random_bound(m.retrieveIntVars(), seed));
             m.findAllSolutions();
             Assert.assertEquals(0, m.getMeasures().getSolutionCount(), "number of solutions");
         }
@@ -334,7 +334,7 @@ public class Tutorial {
                 m.post(ICF.lex_less(parser.getObjects().get(i).getCoordinates(), parser.getObjects().get(i + 1).getCoordinates()));
             }
 
-            m.set(ISF.random(m.retrieveIntVars(), seed));
+            m.set(ISF.random_bound(m.retrieveIntVars(), seed));
             m.findAllSolutions();
             Assert.assertEquals(m.getMeasures().getSolutionCount(), 2);
         }
