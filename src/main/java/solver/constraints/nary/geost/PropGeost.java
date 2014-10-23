@@ -42,8 +42,8 @@ import solver.exception.ContradictionException;
 import solver.propagation.IPropagationEngine;
 import solver.propagation.NoPropagationEngine;
 import solver.search.solution.Solution;
-import solver.variables.EventType;
 import solver.variables.IntVar;
+import solver.variables.events.IntEventType;
 import util.ESat;
 
 import java.util.HashMap;
@@ -163,7 +163,7 @@ public class PropGeost extends Propagator<IntVar> {
 
     @Override
     protected int getPropagationConditions(int vIdx) {
-        return EventType.INT_ALL_MASK();
+        return IntEventType.ALL_EVENTS;
     }
 
     @Override
@@ -174,11 +174,6 @@ public class PropGeost extends Propagator<IntVar> {
         //        LOGGER.info("----propagate");          ^
         if (stp.opt.debug) LOGGER.info("GeostConstraint:propagate()");
         filter();
-    }
-
-    @Override
-    public void propagate(int idxVarInProp, int mask) throws ContradictionException {
-        forcePropagate(EventType.FULL_PROPAGATION);
     }
 
     @Override
