@@ -6,7 +6,7 @@
 
     <groupId>choco</groupId>
     <artifactId>choco-geost</artifactId>
-    <version>3.2.1-SNAPSHOT</version>
+    <version>3.2.1</version>
     <packaging>jar</packaging>
     <name>Geost constraint, developped for Choco3</name>
 
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>choco</groupId>
             <artifactId>choco-solver</artifactId>
-            <version>3.2.1-SNAPSHOT</version>
+            <version>3.2.1</version>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>
@@ -46,13 +46,9 @@
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
