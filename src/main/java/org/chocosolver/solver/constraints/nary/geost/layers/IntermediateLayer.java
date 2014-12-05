@@ -30,7 +30,6 @@ package org.chocosolver.solver.constraints.nary.geost.layers;
 
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
 import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
@@ -152,7 +151,7 @@ public final class IntermediateLayer {
     private List lexInFeasibleForInbox(Inbox ictr, boolean minLex, int d, int k, GeostObject o) {
 
         //RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Point object
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
 
         int[] t = new int[ictr.getT().length];
         t = ictr.getT();
@@ -205,7 +204,7 @@ public final class IntermediateLayer {
 
     private List lexInFeasibleForOutbox(Outbox ictr, boolean minLex, int k, GeostObject o) {
         //RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Point object
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         int[] t = new int[ictr.getT().length];
         t = ictr.getT();
         int[] l = new int[ictr.getL().length];
@@ -239,7 +238,7 @@ public final class IntermediateLayer {
 
     private List isFeasibleForInbox(Inbox ictr, boolean min, int d, int k, GeostObject o, Point c) {
         //RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Region object
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         int[] t = new int[ictr.getT().length];
         t = ictr.getT();
         int[] l = new int[ictr.getL().length];
@@ -277,7 +276,7 @@ public final class IntermediateLayer {
 
     private List isFeasibleForOutbox(Outbox ictr, boolean min, int k, GeostObject o, Point c) {
         //RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Region object
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         int[] t = new int[ictr.getT().length];
         t = ictr.getT();
         int[] l = new int[ictr.getL().length];
@@ -309,7 +308,7 @@ public final class IntermediateLayer {
 
     private List isFeasibleForAvoidHoles() {
         //RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Region object
-        return new ArrayList<Object>();
+        return new ArrayList<>();
     }
 
 

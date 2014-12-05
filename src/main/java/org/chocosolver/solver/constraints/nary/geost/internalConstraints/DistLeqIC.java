@@ -329,7 +329,7 @@ public final class DistLeqIC extends ForbiddenRegion {
 
 
         //uniques: because int the pseudo-code, an union is considered
-        HashMap<Double, Boolean> inIt = new HashMap<Double, Boolean>();
+        HashMap<Double, Boolean> inIt = new HashMap<>();
         for (int i = 0; i < n; i++) {
             if (inIt.get(result[i]) == null) {
                 inIt.put(result[i], true);

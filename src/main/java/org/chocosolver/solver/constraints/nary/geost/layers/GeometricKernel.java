@@ -28,12 +28,10 @@
 package org.chocosolver.solver.constraints.nary.geost.layers;
 
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.solver.constraints.nary.geost.externalConstraints.*;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
 import org.chocosolver.solver.constraints.nary.geost.util.Pair;
 import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.Solver;
@@ -106,8 +104,8 @@ public final class GeometricKernel {
         memo = new MemoStore();
         memo.p = 1;
         memo.active = memo_;
-        memo.listObj = new ArrayList<List<GeostObject>>(0);
-        memo.m = new HashMap<int[], Integer>(16);
+        memo.listObj = new ArrayList<>(0);
+        memo.m = new HashMap<>(16);
         included = included_;
         this.solver = aSolver;
         this.constraint = aConstraint;
@@ -130,7 +128,7 @@ public final class GeometricKernel {
     List getFR(int d, int k, GeostObject o, Point c, Point jump, List<InternalConstraint> ACTRS, boolean increase) {
         stp.opt.GetFRCalled++;
 
-        List<Object> result = new ArrayList<Object>(2);
+        List<Object> result = new ArrayList<>(2);
         List v;
         if (increase) {
             for (int rr = get_fr_ptr_a; rr < ACTRS.size() + get_fr_ptr_a; rr++) {
@@ -341,7 +339,7 @@ public final class GeometricKernel {
     // the Frame is part of the external constraint
     {
         GeostObject o = stp.getObject(oid);
-        if (o.getShapeId().instantiated()) {
+        if (o.getShapeId().isInstantiated()) {
             return filterObj(k, oid);
         } else {
             int[] minG = new int[k];
@@ -595,7 +593,7 @@ public final class GeometricKernel {
 
     static List adjustUp(Point c, Point n, GeostObject o, int d, int k) {
         //LOGGER.info("Adjust Up("+c+","+ n+",?,"+d+","+k  +")");
-        List<Object> result = new ArrayList<Object>(3);
+        List<Object> result = new ArrayList<>(3);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -680,7 +678,7 @@ public final class GeometricKernel {
      * Moves down to the next feasible point, this function is used by the PruneMax function.
      */
     static List adjustDown(Point c, Point n, GeostObject o, int d, int k) {
-        List<Object> result = new ArrayList<Object>(3);
+        List<Object> result = new ArrayList<>(3);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -781,7 +779,7 @@ public final class GeometricKernel {
         oIDs[0] = oID;
         oIDs[1] = oID + 1;
 
-        List<InternalConstraint> added = new ArrayList<InternalConstraint>(16);
+        List<InternalConstraint> added = new ArrayList<>(16);
 
         for (int ic = 0; ic < o.getRelatedExternalConstraints().size(); ic++) {
             ExternalConstraint ectr = o.getRelatedExternalConstraints().get(ic);
@@ -970,7 +968,7 @@ public final class GeometricKernel {
         int x = o2.getShapeId().getUB();
         int y = o1.getShapeId().getUB();
         return (stp.opt.memo_objects[o1.getObjectId()][o2.getObjectId()]) &&
-                included.get(new Pair<Integer, Integer>(x, y)) && old_c.lexGreaterThan(c, ctrlV);
+                included.get(new Pair<>(x, y)) && old_c.lexGreaterThan(c, ctrlV);
     }
 
     /**
@@ -1128,7 +1126,7 @@ public final class GeometricKernel {
         if (memo.active) {
             if (memo.m.get(ctrlV) == null) {
                 memo.m.put(ctrlV, memo.listObj.size());
-                memo.listObj.add(new ArrayList<GeostObject>(0));
+                memo.listObj.add(new ArrayList<>(0));
             }
 
             List<GeostObject> currentList = memo.listObj.get(memo.m.get(ctrlV));
@@ -1315,7 +1313,7 @@ public final class GeometricKernel {
 
         Region candidate = null;
 
-        List<ForbiddenRegion> list = new ArrayList<ForbiddenRegion>(16);
+        List<ForbiddenRegion> list = new ArrayList<>(16);
         for (InternalConstraint ictr : ictrs) {
             if (!(ictr instanceof ForbiddenRegion)) {
                 throw new SolverException("GetBestFR():not a ForviddenRegion constraint.");
@@ -1333,7 +1331,7 @@ public final class GeometricKernel {
         }
 
         int maxVolume = 0;
-        List<Region> maxVolumeList = new ArrayList<Region>(16);
+        List<Region> maxVolumeList = new ArrayList<>(16);
         for (ForbiddenRegion fr : list) {
             Region B, f = null;
             List r = fr.isFeasible(increase, d, k, o, c, n);
@@ -1425,7 +1423,7 @@ public final class GeometricKernel {
 
     static List adjustDown(Point c, Point n, GeostObject o, int d, int k, boolean mode) {
         int cd = c.getCoord(d);
-        List<Object> result = new ArrayList<Object>(4);
+        List<Object> result = new ArrayList<>(4);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -1459,7 +1457,7 @@ public final class GeometricKernel {
 
     static List adjustUp(Point c, Point n, GeostObject o, int d, int k, boolean mode) {
         int cd = c.getCoord(d);
-        List<Object> result = new ArrayList<Object>(4);
+        List<Object> result = new ArrayList<>(4);
         int jPrime = 0;
         int j = k - 1;
         while (j >= 0) {
@@ -1646,7 +1644,7 @@ public final class GeometricKernel {
             adjUp = null;
 
             if (stp.opt.delta.get(d) == null) {
-                stp.opt.delta.put(d, new HashMap<Integer, Integer>(16));
+                stp.opt.delta.put(d, new HashMap<>(16));
             }
             HashMap<Integer, Integer> curDelta = stp.opt.delta.get(d);
             int delta = Math.abs(c.getCoord(d) - initial_c.getCoord(d));
@@ -1807,7 +1805,7 @@ public final class GeometricKernel {
             adjDown = null;
 
             if (stp.opt.delta.get(d) == null) {
-                stp.opt.delta.put(d, new HashMap<Integer, Integer>(16));
+                stp.opt.delta.put(d, new HashMap<>(16));
             }
             HashMap<Integer, Integer> curDelta = stp.opt.delta.get(d);
             int delta = Math.abs(c.getCoord(d) - initial_c.getCoord(d));
@@ -1848,7 +1846,7 @@ public final class GeometricKernel {
     //7.7.2. Utility functions
 
     static List<ForbiddenRegion> setOfCstrsOnPt(Point c, List<InternalConstraint> ictrs) {
-        List<ForbiddenRegion> r = new ArrayList<ForbiddenRegion>(ictrs.size());
+        List<ForbiddenRegion> r = new ArrayList<>(ictrs.size());
         for (InternalConstraint ictr : ictrs) {
             if (!(ictr instanceof ForbiddenRegion)) {
                 throw new SolverException("GeometricKernel:SetOfCstrsOnPt():not a ForbiddenRegion constraint.");
@@ -2440,7 +2438,7 @@ public final class GeometricKernel {
 
     Pair<Boolean, Integer> findBoxInterIn(int d_least, int d_prev_least, int k, Point c, Point n, boolean increase, ForbiddenRegion ictr_c, ForbiddenRegion ictr_g, int low, int up) {
         if (low >= up) {
-            return new Pair<Boolean, Integer>(false, 0);
+            return new Pair<>(false, 0);
         }
         Point low_pt = slidePt(c, d_least, low);
         Point up_pt = slidePt(c, d_least, up);
@@ -2484,10 +2482,10 @@ public final class GeometricKernel {
         }
 
         if (low >= up) {
-            return new Pair<Boolean, Integer>(true, mid_ext.getCoord(d_prev_least));
+            return new Pair<>(true, mid_ext.getCoord(d_prev_least));
         }
 
-        return new Pair<Boolean, Integer>(false, 0);
+        return new Pair<>(false, 0);
 
     }
 
@@ -3471,7 +3469,7 @@ public final class GeometricKernel {
         }
 
 
-        return new Pair<Boolean, Region>(true, b);
+        return new Pair<>(true, b);
     }
 
     Pair<Boolean, Region> getDeltaFRSingle(int d_prune, int k, GeostObject o, Point c, Point n, List<InternalConstraint> ictrs, boolean increase, int delta_prune) {
@@ -3497,7 +3495,7 @@ public final class GeometricKernel {
             }
         }
         if (C_c.isEmpty()) {
-            return new Pair<Boolean, Region>(false, null);
+            return new Pair<>(false, null);
         }
 
         for (ForbiddenRegion ictr_c : C_c) {
@@ -3506,7 +3504,7 @@ public final class GeometricKernel {
                 Region box = buildBox(k, c, g);
                 box.setType("single");
                 //writeBox(box,increase,false);
-                return new Pair<Boolean, Region>(true, box);
+                return new Pair<>(true, box);
             }
 
             Region box_greedy = getGreedyBoxFromPoint(d_prune, k, c, n, ictr_c, increase, pos_p);
@@ -3521,7 +3519,7 @@ public final class GeometricKernel {
             LOGGER.info("/*example*/returns (true," + best_greedy + ')');
         }
 
-        return new Pair<Boolean, Region>(true, best_greedy);
+        return new Pair<>(true, best_greedy);
     }
 
     Pair<Boolean, Region> getDeltaFRMultiple(int d_prune, int k, GeostObject o, Point c, Point n, List<InternalConstraint> ictrs, boolean increase, int delta_prune) {
@@ -3544,7 +3542,7 @@ public final class GeometricKernel {
             if (stp.opt.debug) {
                 LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (" + false + ",null)");
             }
-            return new Pair<Boolean, Region>(false, null);
+            return new Pair<>(false, null);
 
         }
 
@@ -3569,7 +3567,7 @@ public final class GeometricKernel {
                 if (stp.opt.debug) {
                     LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true" + box + ')');
                 }
-                return new Pair<Boolean, Region>(true, box);
+                return new Pair<>(true, box);
             }
             Point gpl = extend(c, d_prev_least, k, n, ictr_c, increase);
             List<ForbiddenRegion> C_g = setOfCstrsOnPt(g, ictrs);
@@ -3781,7 +3779,7 @@ public final class GeometricKernel {
         if (stp.opt.debug) {
             LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true," + best_box + ')');
         }
-        return new Pair<Boolean, Region>(true, best_box);
+        return new Pair<>(true, best_box);
 
     }
 
@@ -4080,7 +4078,7 @@ public final class GeometricKernel {
 
             //stp.delta stores the for each diff d the number of diff of size d jumped
             if (stp.opt.delta.get(d_current) == null) {
-                stp.opt.delta.put(d_current, new HashMap<Integer, Integer>(16));
+                stp.opt.delta.put(d_current, new HashMap<>(16));
             }
             HashMap<Integer, Integer> curDelta = stp.opt.delta.get(d_current);
             if (curDelta.get(diff) == null) {
@@ -4099,11 +4097,11 @@ public final class GeometricKernel {
                         //stp.succDelta stores for each diff and for the current pruning dimension d,
                         //the list of the number of time a diff happened, for each diff.
                         if (stp.opt.succDelta.get(last_dprune) == null) {
-                            stp.opt.succDelta.put(d, new HashMap<Integer, List<Integer>>(16));
+                            stp.opt.succDelta.put(d, new HashMap<>(16));
                         }
                         HashMap<Integer, List<Integer>> curSuccDelta = stp.opt.succDelta.get(last_dprune);
                         if (curSuccDelta.get(last_diff) == null) {
-                            curSuccDelta.put(last_diff, new ArrayList<Integer>(16));
+                            curSuccDelta.put(last_diff, new ArrayList<>(16));
                         }
                         List<Integer> succ_list = curSuccDelta.get(last_diff);
                         succ_list.add(diff_counter);
@@ -4122,7 +4120,7 @@ public final class GeometricKernel {
 
         } //if (stp.opt.debug)
 
-        return new Pair<Integer, Integer>(diff, diff_counter);
+        return new Pair<>(diff, diff_counter);
 
     }
 
@@ -4696,7 +4694,7 @@ public final class GeometricKernel {
         int y_1i = ((int) Math.floor(y_1));
         int y_2i = ((int) Math.floor(y_2));
 
-        List<Point> listOfPoints = new ArrayList<Point>(2);
+        List<Point> listOfPoints = new ArrayList<>(2);
         Point p1 = new Point(2);
         p1.setCoord(0, x_1i);
         p1.setCoord(1, y_1i);
@@ -4801,7 +4799,7 @@ public final class GeometricKernel {
 
         for (int i = 1; i < stp.getObjectKeySet().size() - 1; i++) { //last one is the center circle, supp. a strict order on objects!
             IntVar Dprec = getD(i - 1);
-            if (Dprec.instantiated()) {
+            if (Dprec.isInstantiated()) {
                 LOGGER.info("D of oid:" + (i - 1) + " is instantiated:" + Dprec);
                 IntVar D = getD(i);
                 int oldSup = D.getUB();

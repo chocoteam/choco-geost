@@ -49,7 +49,7 @@ public class Frame implements Externalizable {
 	
 	public Frame()
 	{
-		RelForbidRegions = new HashMap<Integer, List<Region>>();
+		RelForbidRegions = new HashMap<>();
 	}
 
 	/**

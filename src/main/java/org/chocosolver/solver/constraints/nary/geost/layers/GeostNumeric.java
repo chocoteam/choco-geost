@@ -72,17 +72,17 @@ public final class GeostNumeric {
     private String listContractors = "";
 
 
-    private Map<GeostObject, String> contractorName = new HashMap<GeostObject, String>();
+    private Map<GeostObject, String> contractorName = new HashMap<>();
     //list of var ids in the ext engine corresponding to domain variable
-    private Map<IntVar, List<Integer>> VarVarId = new HashMap<IntVar, List<Integer>>();
+    private Map<IntVar, List<Integer>> VarVarId = new HashMap<>();
     //list of param ids in the ext engine corresponding to domain variable
-    private Map<IntVar, List<Integer>> varParamId = new HashMap<IntVar, List<Integer>>();
+    private Map<IntVar, List<Integer>> varParamId = new HashMap<>();
     //list of domain variables that exist in the external engine
-    private Map<IntVar, Boolean> listOfVars = new HashMap<IntVar, Boolean>();
+    private Map<IntVar, Boolean> listOfVars = new HashMap<>();
 
-    private Map<IntVar, HashMap<ExternalConstraint, Integer>> VarParamId = new HashMap<IntVar, HashMap<ExternalConstraint, Integer>>();
-    private Map<GeostObject, HashMap<ExternalConstraint, String>> ObjParamIdText = new HashMap<GeostObject, HashMap<ExternalConstraint, String>>();
-    private Map<GeostObject, HashMap<ExternalConstraint, String>> ObjCstrName = new HashMap<GeostObject, HashMap<ExternalConstraint, String>>();
+    private Map<IntVar, HashMap<ExternalConstraint, Integer>> VarParamId = new HashMap<>();
+    private Map<GeostObject, HashMap<ExternalConstraint, String>> ObjParamIdText = new HashMap<>();
+    private Map<GeostObject, HashMap<ExternalConstraint, String>> ObjCstrName = new HashMap<>();
 
 
     private long cr = -1; //conversion rate between domain variable and external engine
@@ -122,7 +122,7 @@ public final class GeostNumeric {
 
     private void addVar(IntVar v) {
         if (!VarVarId.containsKey(v)) {
-            VarVarId.put(v, new ArrayList<Integer>());
+            VarVarId.put(v, new ArrayList<>());
         }
         VarVarId.get(v).add(varid++);
         listOfVars.put(v, true);
@@ -220,7 +220,7 @@ public final class GeostNumeric {
 
     private void addObjParamText(GeostObject o, ExternalConstraint ectr) {
         if (ObjParamIdText.get(o) == null) {
-            ObjParamIdText.put(o, new HashMap<ExternalConstraint, String>());
+            ObjParamIdText.put(o, new HashMap<>());
         }
         ObjParamIdText.get(o).put(ectr, strObjName(o));
 
@@ -237,11 +237,11 @@ public final class GeostNumeric {
 
     private void addVarParam(IntVar v, ExternalConstraint ectr) {
         if (VarParamId.get(v) == null) {
-            VarParamId.put(v, new HashMap<ExternalConstraint, Integer>());
+            VarParamId.put(v, new HashMap<>());
         }
         VarParamId.get(v).put(ectr, paramid);
         if (varParamId.get(v) == null) {
-            varParamId.put(v, new ArrayList<Integer>());
+            varParamId.put(v, new ArrayList<>());
         }
         varParamId.get(v).add(paramid);
         listOfVars.put(v, true);
@@ -259,7 +259,7 @@ public final class GeostNumeric {
     private void addCstrName(GeostObject o, ExternalConstraint ectr) {
         String name = strCstrName(o);
         if (ObjCstrName.get(o) == null) {
-            ObjCstrName.put(o, new HashMap<ExternalConstraint, String>());
+            ObjCstrName.put(o, new HashMap<>());
         }
         ObjCstrName.get(o).put(ectr, name);
     }

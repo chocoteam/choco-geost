@@ -83,8 +83,8 @@ public final class GeostObject implements Externalizable {
         this.start = startTime;
         this.duration = durationTime;
         this.end = endTime;
-        this.relatedExternalConstraints = new ArrayList<ExternalConstraint>();
-        this.relatedInternalConstraints = new ArrayList<InternalConstraint>();
+        this.relatedExternalConstraints = new ArrayList<>();
+        this.relatedInternalConstraints = new ArrayList<>();
         this.radius = -1;
     }
 
@@ -96,8 +96,8 @@ public final class GeostObject implements Externalizable {
         this.start = startTime;
         this.duration = durationTime;
         this.end = endTime;
-        this.relatedExternalConstraints = new ArrayList<ExternalConstraint>();
-        this.relatedInternalConstraints = new ArrayList<InternalConstraint>();
+        this.relatedExternalConstraints = new ArrayList<>();
+        this.relatedInternalConstraints = new ArrayList<>();
         this.radius = radius;
     }
 
@@ -108,8 +108,8 @@ public final class GeostObject implements Externalizable {
     public GeostObject(int dim) {
         this.dim = dim;
         this.coords = new IntVar[this.dim];
-        this.relatedExternalConstraints = new ArrayList<ExternalConstraint>();
-        this.relatedInternalConstraints = new ArrayList<InternalConstraint>();
+        this.relatedExternalConstraints = new ArrayList<>();
+        this.relatedInternalConstraints = new ArrayList<>();
     }
 
     /**
@@ -257,7 +257,7 @@ public final class GeostObject implements Externalizable {
     public boolean coordInstantiated() {
 
         for (int i = 0; i < this.coords.length; i++) {
-            if (!this.getCoord(i).instantiated()) {
+            if (!this.getCoord(i).isInstantiated()) {
                 return false;
             }
         }
@@ -294,7 +294,7 @@ public final class GeostObject implements Externalizable {
 
     public void print() {
         for (int i = 0; i < this.coords.length; i++) {
-            if (!this.getCoord(i).instantiated())
+            if (!this.getCoord(i).isInstantiated())
                 LOGGER.info(this.getCoord(i).getLB() + " " + this.getCoord(i).getUB() + ",");
             else
                 LOGGER.info(this.getCoord(i).getLB() + " ");
@@ -305,12 +305,12 @@ public final class GeostObject implements Externalizable {
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < this.coords.length; i++) {
             if (i + 1 != this.coords.length)
-                if (!this.getCoord(i).instantiated())
+                if (!this.getCoord(i).isInstantiated())
                     res.append("[").append(this.getCoord(i).getLB()).append(",")
                             .append(this.getCoord(i).getUB()).append("],");
                 else
                     res.append(this.getCoord(i).getLB()).append(",");
-            else if (!this.getCoord(i).instantiated())
+            else if (!this.getCoord(i).isInstantiated())
                 res.append("[").append(this.getCoord(i).getLB()).append(",").append(this.getCoord(i).getUB()).append("]");
             else
                 res.append(this.getCoord(i).getLB()).append("");
@@ -398,7 +398,7 @@ public final class GeostObject implements Externalizable {
     //Is p inside domain of o?
     public boolean isInside(Point p) {
         for (int i = 0; i < coords.length; i++)
-            if (!coords[i].instantiatedTo(p.getCoord(i)))
+            if (!coords[i].isInstantiatedTo(p.getCoord(i)))
                 return false;
         return true;
     }

@@ -40,13 +40,13 @@ public final class Shape {
     private List<ShiftedBox> sb;
 
     public Shape() {
-        this.sb = new ArrayList<ShiftedBox>();
+        this.sb = new ArrayList<>();
 
     }
 
     public Shape(int id) {
         this.shapeId = id;
-        this.sb = new ArrayList<ShiftedBox>();
+        this.sb = new ArrayList<>();
     }
 
     public List<ShiftedBox> getShiftedBoxes() {
