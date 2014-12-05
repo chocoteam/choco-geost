@@ -77,17 +77,17 @@ public final class InputParser {
     public InputParser(String path, int dim) {
         this.path = path;
         this.dim = dim;
-        obj = new ArrayList<GeostObject>();
-        sh = new ArrayList<Shape>();
-        sb = new ArrayList<ShiftedBox>();
+        obj = new ArrayList<>();
+        sh = new ArrayList<>();
+        sb = new ArrayList<>();
     }
 
     public InputParser(GeostProblem gp, int dim) {
         this.dim = dim;
         this.gp = gp;
-        obj = new ArrayList<GeostObject>();
-        sh = new ArrayList<Shape>();
-        sb = new ArrayList<ShiftedBox>();
+        obj = new ArrayList<>();
+        sh = new ArrayList<>();
+        sb = new ArrayList<>();
     }
 
 

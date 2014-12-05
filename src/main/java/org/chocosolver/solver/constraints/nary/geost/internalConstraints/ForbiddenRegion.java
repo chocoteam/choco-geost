@@ -63,7 +63,7 @@ public abstract class ForbiddenRegion extends InternalConstraint {
     public List isFeasible(boolean min, int dim, int k, GeostObject o, Point p, Point jump) {
         //System.out.println("-- ENTERING ForbiddenRegion.isFeasible;p:"+p+";jump:"+jump);
         Region f = new Region(k, o.getObjectId());
-        List<Object> result = new ArrayList<Object>();
+        List<Object> result = new ArrayList<>();
         if (!insideForbidden(p)) { /*line 1*/
             //System.out.println("Not Inside forbidden");
             result.add(0, true);

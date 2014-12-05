@@ -28,10 +28,8 @@
 package org.chocosolver.solver.constraints.nary.geost.layers;
 
 
-import org.chocosolver.solver.constraints.nary.geost.externalConstraints.*;
 import org.chocosolver.solver.constraints.nary.geost.frames.Frame;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
 import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.Setup;
@@ -163,7 +161,7 @@ public final class ExternalLayer {
             GeostObject o = stp.getObject(oIDs[i]);
             int m = o.getShapeId().getDomainSize();
 
-            List<Region> regions = new ArrayList<Region>();
+            List<Region> regions = new ArrayList<>();
 
             int[][] set = new int[m][];
             int ivalue = 0;
@@ -221,7 +219,7 @@ public final class ExternalLayer {
         ForbiddenRegionFrame f = new ForbiddenRegionFrame(ectr.q, ectr.D, s1, s2, ectr.o1, ectr.o2);
         for (int i = 0; i < oIDs.length; i++) {
             GeostObject o = stp.getObject(oIDs[i]);
-            List<Region> regions = new ArrayList<Region>();
+            List<Region> regions = new ArrayList<>();
             f.addForbidRegions(o.getObjectId(), regions);
         }
 
@@ -247,7 +245,7 @@ public final class ExternalLayer {
         DistLinearFrame f = new DistLinearFrame(ectr.a, ectr.o1, ectr.b);
         for (int i = 0; i < oIDs.length; i++) {
             GeostObject o = stp.getObject(oIDs[i]);
-            List<Region> regions = new ArrayList<Region>();
+            List<Region> regions = new ArrayList<>();
             f.addForbidRegions(o.getObjectId(), regions);
         }
 
@@ -269,12 +267,12 @@ public final class ExternalLayer {
 
     private List<InternalConstraint> genInternalCtrsForCompatible() {
 
-        return new ArrayList<InternalConstraint>();
+        return new ArrayList<>();
     }
 
     private List<InternalConstraint> genInternalCtrsForIncluded() {
 
-        return new ArrayList<InternalConstraint>();
+        return new ArrayList<>();
     }
 
     public Pair<Outbox, Boolean> mergeAdjacent(Outbox new_ob, Outbox last_ob) {
@@ -287,7 +285,7 @@ public final class ExternalLayer {
         if (dim != -1) new_ob.merge(last_ob, dim); //merge the two objects
 //        if (dim!=-1) LOGGER.info("after merge:"+new_ob);
 
-        return new Pair<Outbox, Boolean>(new_ob, dim != -1);
+        return new Pair<>(new_ob, dim != -1);
 
     }
 
@@ -295,7 +293,7 @@ public final class ExternalLayer {
     private List<InternalConstraint> genInternalCtrsForNonOverlapping(NonOverlapping ectr, GeostObject o) {
 
         // Since non_overlapping constraint then we will generate outbox constraints
-        List<InternalConstraint> ictrs = new ArrayList<InternalConstraint>();
+        List<InternalConstraint> ictrs = new ArrayList<>();
         List<ShiftedBox> sb = stp.getShape(o.getShapeId().getLB());
         Iterator<Integer> itr;
         itr = ectr.getFrame().getRelForbidRegions().keySet().iterator();
@@ -382,11 +380,11 @@ public final class ExternalLayer {
 
     private List<InternalConstraint> genInternalCtrsForVisible() {
 
-        return new ArrayList<InternalConstraint>();
+        return new ArrayList<>();
     }
 
     private List<InternalConstraint> genInternalCtrsForDistGeq(DistGeq ectr) {
-        List<InternalConstraint> ictrs = new ArrayList<InternalConstraint>();
+        List<InternalConstraint> ictrs = new ArrayList<>();
         ForbiddenRegionFrame f = ((ForbiddenRegionFrame) ectr.getFrame());
         DistGeqIC ic = new DistGeqIC(stp, f.q, f.D, f.s1, f.s2, f.o1, f.o2, ectr.getDistanceVar());
         ictrs.add(ic);
@@ -394,7 +392,7 @@ public final class ExternalLayer {
     }
 
     private List<InternalConstraint> genInternalCtrsForDistLeq(DistLeq ectr) {
-        List<InternalConstraint> ictrs = new ArrayList<InternalConstraint>();
+        List<InternalConstraint> ictrs = new ArrayList<>();
         ForbiddenRegionFrame f = ((ForbiddenRegionFrame) ectr.getFrame());
         DistLeqIC ic = new DistLeqIC(stp, f.q, f.D, f.s1, f.s2, f.o1, f.o2, ectr.getDistanceVar());
         ictrs.add(ic);
@@ -402,7 +400,7 @@ public final class ExternalLayer {
     }
 
     private List<InternalConstraint> genInternalCtrsForDistLinear(DistLinear ectr) {
-        List<InternalConstraint> ictrs = new ArrayList<InternalConstraint>();
+        List<InternalConstraint> ictrs = new ArrayList<>();
         DistLinearFrame f = ((DistLinearFrame) ectr.getFrame());
         DistLinearIC ic = new DistLinearIC(stp, f.a, f.o1, f.b);
         ictrs.add(ic);

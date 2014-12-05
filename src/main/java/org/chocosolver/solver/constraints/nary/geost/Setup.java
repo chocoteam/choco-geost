@@ -79,16 +79,16 @@ public final class Setup {
      * A hashtable where the key is a shape_id. And for every shape_id there is a pointer to the set of shifted_boxes that belong to this shape.
      * This hashtable contains all the shapes (and their shifted boxes) of all the objects in the geost constraint.
      */
-    public final Hashtable<Integer, List<ShiftedBox>> shapes = new Hashtable<Integer, List<ShiftedBox>>();
+    public final Hashtable<Integer, List<ShiftedBox>> shapes = new Hashtable<>();
     /**
      * A hashtable where the key is an object_id. And for every object_id there is a pointer to the actual object.
      * This hashtable contains all the objects that goest needs to place.
      */
-    public final Hashtable<Integer, GeostObject> objects = new Hashtable<Integer, GeostObject>();
+    public final Hashtable<Integer, GeostObject> objects = new Hashtable<>();
     /**
      * A Vector containing ExternalConstraint objects. This vector constains all the external constraints that geost needs to deal with.
      */
-    private final List<ExternalConstraint> constraints = new ArrayList<ExternalConstraint>();
+    private final List<ExternalConstraint> constraints = new ArrayList<>();
     /**
      * A heap data structure containting elements in ascending order (lexicographically).
      * This is not used anymore.
@@ -211,7 +211,7 @@ public final class Setup {
         if (shapes.containsKey(sb.getShapeId())) {
             shapes.get(sb.getShapeId()).add(sb);
         } else {
-            List<ShiftedBox> v = new ArrayList<ShiftedBox>();
+            List<ShiftedBox> v = new ArrayList<>();
             v.add(sb);
             shapes.put(sb.getShapeId(), v);
         }

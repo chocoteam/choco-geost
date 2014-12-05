@@ -74,7 +74,7 @@ public final class DistLinearIC extends ForbiddenRegion {
         if (D < 0) D = 0;
 
         final Region f = new Region(k, o.getObjectId());
-        final List<Object> result = new ArrayList<Object>();
+        final List<Object> result = new ArrayList<>();
 
         if (!insideForbidden(p)) { /*line 1*/
             LOGGER.info("Not Inside forbidden");

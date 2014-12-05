@@ -63,8 +63,8 @@ public class GeostOptions {
     public static long GetFRCalls=0;
     public static long deltaOne=0;
     public static long deltaZero=0;
-    public static HashMap<Integer, HashMap<Integer,Integer>> delta= new HashMap<Integer, HashMap<Integer,Integer>>();
-    public static HashMap<Integer,HashMap<Integer, List<Integer>>> succDelta= new HashMap<Integer, HashMap<Integer, List<Integer>>>();
+    public static HashMap<Integer, HashMap<Integer,Integer>> delta= new HashMap<>();
+    public static HashMap<Integer,HashMap<Integer, List<Integer>>> succDelta= new HashMap<>();
 
     public static ObjectOutput serial=null;
     public static FileOutputStream fileSerial=null;

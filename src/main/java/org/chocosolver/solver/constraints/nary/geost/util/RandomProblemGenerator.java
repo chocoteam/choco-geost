@@ -51,8 +51,8 @@ public final class RandomProblemGenerator {
     private int dim;
 
     public RandomProblemGenerator(int k, int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength) {
-        objects = new ArrayList<GeostObject>();
-        sBoxes = new ArrayList<ShiftedBox>();
+        objects = new ArrayList<>();
+        sBoxes = new ArrayList<>();
         m = new Solver();
         this.nbOfObjects = nbOfObjects;
         this.nbOfShapes = nbOfShapes;
@@ -77,7 +77,7 @@ public final class RandomProblemGenerator {
         int[] maxDomain = new int[dim]; //maximum value of o.x in each dimension
 
         //first generate the shape IDs
-        List<Integer> shapeIDS = new ArrayList<Integer>();
+        List<Integer> shapeIDS = new ArrayList<>();
         for (int i = 0; i < nbOfShapes; i++) {
             shapeIDS.add(i, i);
         }

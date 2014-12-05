@@ -76,7 +76,7 @@ public class Tutorial {
         int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
 
             /*Collect distance variales due to ditance constraints*/
-        List<Integer> distVars = new ArrayList<Integer>(eCtrs.size());
+        List<Integer> distVars = new ArrayList<>(eCtrs.size());
         for (int i = 0; i < eCtrs.size(); i++) {
             ExternalConstraint ectr = eCtrs.get(i);
             if ((ectr instanceof DistLeq) && (((DistLeq) ectr).hasDistanceVar()))
@@ -153,7 +153,7 @@ public class Tutorial {
             Solver solver = new Solver();
 
             //Create Objects
-            List<GeostObject> obj2 = new ArrayList<GeostObject>();
+            List<GeostObject> obj2 = new ArrayList<>();
 
             for (int i = 0; i < nbOfObj; i++) {
                 IntVar shapeId = VF.fixed("sid", i, solver);
@@ -168,7 +168,7 @@ public class Tutorial {
             }
 
             //create shiftedboxes and add them to corresponding shapes
-            List<ShiftedBox> sb2 = new ArrayList<ShiftedBox>();
+            List<ShiftedBox> sb2 = new ArrayList<>();
             int h = 0;
             while (h < nbOfObj) {
 
@@ -181,7 +181,7 @@ public class Tutorial {
             }
 
             //Create the external constraints vecotr
-            List<ExternalConstraint> ectr2 = new ArrayList<ExternalConstraint>();
+            List<ExternalConstraint> ectr2 = new ArrayList<>();
             //create the list od dimensions for the external constraint
             int[] ectrDim2 = new int[this.dim];
             for (int d = 0; d < 3; d++)
@@ -222,7 +222,7 @@ public class Tutorial {
 
             Solver m = rp.getModel();
 
-            List<ExternalConstraint> ectr = new ArrayList<ExternalConstraint>();
+            List<ExternalConstraint> ectr = new ArrayList<>();
             int[] ectrDim = new int[this.dim];
             for (int i = 0; i < this.dim; i++)
                 ectrDim[i] = i;
@@ -280,7 +280,7 @@ public class Tutorial {
 
 
             // create a vector to hold in it all the external constraints we want to add to geost
-            List<ExternalConstraint> ectr = new ArrayList<ExternalConstraint>();
+            List<ExternalConstraint> ectr = new ArrayList<>();
 
             // ////////////Create the needed external constraints//////////////
 
@@ -352,7 +352,7 @@ public class Tutorial {
         Solver m = new Solver();
 
         //Create Objects
-        List<GeostObject> obj2 = new ArrayList<GeostObject>();
+        List<GeostObject> obj2 = new ArrayList<>();
 
         for (int i = 0; i < nbOfObj; i++) {
             IntVar shapeId = VF.fixed("sid", 0, m);
@@ -373,7 +373,7 @@ public class Tutorial {
         }
 
         //create shiftedboxes and add them to corresponding shapes
-        List<ShiftedBox> sb2 = new ArrayList<ShiftedBox>();
+        List<ShiftedBox> sb2 = new ArrayList<>();
 
         int[] l = {lengths[0], heights[0], widths[0]};
         int[] t = {0, 0, 0};
@@ -382,7 +382,7 @@ public class Tutorial {
         sb2.add(new ShiftedBox(0, t, l));
 
 
-        List<ExternalConstraint> ectr2 = new ArrayList<ExternalConstraint>();
+        List<ExternalConstraint> ectr2 = new ArrayList<>();
         int[] ectrDim2 = new int[this.dim];
         for (int d = 0; d < 3; d++)
             ectrDim2[d] = d;
@@ -452,7 +452,7 @@ public class Tutorial {
         Solver m = new Solver();
 
         //Create Objects
-        List<GeostObject> obj = new ArrayList<GeostObject>();
+        List<GeostObject> obj = new ArrayList<>();
 
         for (int i = 0; i < nbOfObj; i++) {
             IntVar shapeId = VF.fixed("sid", i, m);
@@ -469,7 +469,7 @@ public class Tutorial {
         }
 
         //create shiftedboxes and add them to corresponding shapes
-        List<ShiftedBox> sb = new ArrayList<ShiftedBox>();
+        List<ShiftedBox> sb = new ArrayList<>();
         for (int i = 0; i < shBoxes.length; i++) {
             int[] offset = {shBoxes[i][1], shBoxes[i][2]};
             int[] sizes = {shBoxes[i][3], shBoxes[i][4]};
@@ -477,7 +477,7 @@ public class Tutorial {
         }
 
         //Create the external constraints vecotr
-        List<ExternalConstraint> ectr = new ArrayList<ExternalConstraint>();
+        List<ExternalConstraint> ectr = new ArrayList<>();
         //create the list of dimensions for the external constraint
         int[] ectrDim = new int[dim];
         for (int d = 0; d < dim; d++)
@@ -495,7 +495,7 @@ public class Tutorial {
         ectr.add(n);
 
         //create the list of controlling vectors
-        List<int[]> ctrlVs = new ArrayList<int[]>();
+        List<int[]> ctrlVs = new ArrayList<>();
         ctrlVs.add(v0);
         //ctrlVs.add(v1);
         //ctrlVs.add(v2);
@@ -542,7 +542,7 @@ public class Tutorial {
         Solver m = new Solver();
 
         // Create Objects
-        List<GeostObject> objects = new ArrayList<GeostObject>();
+        List<GeostObject> objects = new ArrayList<>();
 
         for (int i = 0; i < nbOfObj; i++) {
             IntVar shapeId = VF.enumerated("sid_" + i, domShapes[i][0], domShapes[i][1], m);
@@ -563,7 +563,7 @@ public class Tutorial {
 
         // create shiftedboxes and add them to corresponding shapes
         List<ShiftedBox> sb =
-                new ArrayList<ShiftedBox>();
+                new ArrayList<>();
 
         for (int i = 0; i < shBoxes.length; i++) {
             int[] offset = {shBoxes[i][1], shBoxes[i][2]};
@@ -572,7 +572,7 @@ public class Tutorial {
         }
 
         // Create the external constraints vecotr
-        List<ExternalConstraint> ectr = new ArrayList<ExternalConstraint>();
+        List<ExternalConstraint> ectr = new ArrayList<>();
 
         // create the list of dimensions for the external constraint
         int[] ectrDim = new int[dim];
@@ -615,11 +615,11 @@ public class Tutorial {
 
                 Solver m = new Solver();
 
-                List<GeostObject> geosts = new ArrayList<GeostObject>();
-                List<ShiftedBox> sb = new ArrayList<ShiftedBox>();
+                List<GeostObject> geosts = new ArrayList<>();
+                List<ShiftedBox> sb = new ArrayList<>();
 
-                List<IntVar> x = new ArrayList<IntVar>();
-                List<IntVar> y = new ArrayList<IntVar>();
+                List<IntVar> x = new ArrayList<>();
+                List<IntVar> y = new ArrayList<>();
                 for (int a = 0; a < 16; a++) {
                     IntVar varX = VF.enumerated("img_" + a + "_x", 0, maxX, m);
                     IntVar varY = VF.enumerated("img_" + a + "_y", 0, maxY, m);
@@ -645,7 +645,7 @@ public class Tutorial {
                 NonOverlapping n = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
                 ectr.add(n);
 
-                Vector<int[]> ctrlVs = new Vector<int[]>();
+                Vector<int[]> ctrlVs = new Vector<>();
                 int[] v0 = {1, -3, -2};
                 ctrlVs.add(v0);
 
@@ -665,8 +665,8 @@ public class Tutorial {
     public void testNonOverlap() {
         Solver model = new Solver();
 
-        List<GeostObject> geosts = new ArrayList<GeostObject>();
-        Map<Integer, ShiftedBox> boxesById = new HashMap<Integer, ShiftedBox>();
+        List<GeostObject> geosts = new ArrayList<>();
+        Map<Integer, ShiftedBox> boxesById = new HashMap<>();
 
         // Blocks to be placed
         int currentShapeId = 0;
@@ -683,7 +683,7 @@ public class Tutorial {
         geosts.add(new GeostObject(2, 1, VF.fixed(currentShapeId, model), fixedCoordinates, VF.fixed(0, model),
                 VF.fixed(1, model), VF.fixed(1, model)));
 
-        List<ExternalConstraint> ectr = new ArrayList<ExternalConstraint>();
+        List<ExternalConstraint> ectr = new ArrayList<>();
 
         int[] ectrDim = new int[]{0, 1};
         int[] objOfEctr = new int[geosts.size()];
@@ -691,14 +691,14 @@ public class Tutorial {
         NonOverlapping n = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
         ectr.add(n);
 
-        List<int[]> ctrlVs = new ArrayList<int[]>();
+        List<int[]> ctrlVs = new ArrayList<>();
         int[] v0 = {1, -3, -2};
         // int[] v1 = { 1, -2, 2 };
         // ctrlVs.add(v1);
         ctrlVs.add(v0);
 
         // Definition of the GEOST constraint
-        Constraint geost = geost(2, geosts, new ArrayList<ShiftedBox>(boxesById.values()), ectr, ctrlVs);
+        Constraint geost = geost(2, geosts, new ArrayList<>(boxesById.values()), ectr, ctrlVs);
         model.post(geost);
 
         Assert.assertEquals(model.findSolution(), false);
@@ -741,16 +741,16 @@ public class Tutorial {
                 VF.fixed(0, m), VF.fixed(1, m), VF.fixed(1, m));
         ShiftedBox sb2 = new ShiftedBox(2, new int[]{0, 0}, new int[]{4, 2});
 
-        List<GeostObject> gos = new ArrayList<GeostObject>();
+        List<GeostObject> gos = new ArrayList<>();
         gos.add(lab1);
         gos.add(lab2);
-        List<ShiftedBox> SBs = new ArrayList<ShiftedBox>();
+        List<ShiftedBox> SBs = new ArrayList<>();
         SBs.add(sb1);
         SBs.add(sb2);
 
         int[] ectrDim = new int[]{0, 1};
         int[] objOfEctr = new int[]{1, 2}; // IDs of labels
-        List<ExternalConstraint> ectr = new ArrayList<ExternalConstraint>();
+        List<ExternalConstraint> ectr = new ArrayList<>();
         ectr.add(new NonOverlapping(Constants.NON_OVERLAPPING,
                 ectrDim, objOfEctr));
 
