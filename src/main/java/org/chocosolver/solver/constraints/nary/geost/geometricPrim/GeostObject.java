@@ -27,11 +27,9 @@
 
 package org.chocosolver.solver.constraints.nary.geost.geometricPrim;
 
-import org.chocosolver.solver.constraints.nary.geost.internalConstraints.Outbox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.ExternalConstraint;
 import org.chocosolver.solver.constraints.nary.geost.internalConstraints.InternalConstraint;
+import org.chocosolver.solver.constraints.nary.geost.internalConstraints.Outbox;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.io.Externalizable;
@@ -46,8 +44,6 @@ import java.util.List;
  * This class represent an Object of our placement problem.
  */
 public final class GeostObject implements Externalizable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("geost");
 
     private int oid;          //Object id
     private IntVar sid; // the shape id that corresponds to this object
@@ -295,9 +291,9 @@ public final class GeostObject implements Externalizable {
     public void print() {
         for (int i = 0; i < this.coords.length; i++) {
             if (!this.getCoord(i).isInstantiated())
-                LOGGER.info(this.getCoord(i).getLB() + " " + this.getCoord(i).getUB() + ",");
+                System.out.println(this.getCoord(i).getLB() + " " + this.getCoord(i).getUB() + ",");
             else
-                LOGGER.info(this.getCoord(i).getLB() + " ");
+                System.out.println(this.getCoord(i).getLB() + " ");
         }
     }
 

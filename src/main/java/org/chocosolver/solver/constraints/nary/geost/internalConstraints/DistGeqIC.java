@@ -27,11 +27,10 @@
 
 package org.chocosolver.solver.constraints.nary.geost.internalConstraints;
 
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.Setup;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.exception.SolverException;
 import org.chocosolver.solver.variables.IntVar;
@@ -44,8 +43,6 @@ import org.chocosolver.solver.variables.IntVar;
  * To change this template use File | Settings | File Templates.
  */
 public final class DistGeqIC extends ForbiddenRegion {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
 
     public int q, D, s1, s2, o1, o2;
     IntVar DVar = null; //DVar is the distance variable; valid only if (D_init_lower_bnd!=null && D_init_upper_bnd!=null)
@@ -278,7 +275,7 @@ public final class DistGeqIC extends ForbiddenRegion {
             if (oldSup <= newSup) return false;
             DVar.updateUpperBound(newSup, this.stp.g_constraint);
             if (stp.opt.debug) {
-                LOGGER.info("DistGeqIC:" + this + " updateDistance:[" + DVar.getLB() + "," + DVar.getUB() + "]");
+                System.out.println("DistGeqIC:" + this + " updateDistance:[" + DVar.getLB() + "," + DVar.getUB() + "]");
             }
             if ((DVar.getLB() > DVar.getUB()) || (DVar.getUB() < DVar.getLB())) {
                 stp.g_constraint.contradiction(null, "geost");

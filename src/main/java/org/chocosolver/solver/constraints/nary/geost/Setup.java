@@ -26,8 +26,6 @@
  */
 package org.chocosolver.solver.constraints.nary.geost;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.dataStructures.HeapAscending;
 import org.chocosolver.solver.constraints.nary.geost.dataStructures.HeapDescending;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.ExternalConstraint;
@@ -51,9 +49,7 @@ import java.util.*;
  */
 
 public final class Setup {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("geost");
-
+    
     private final Constants cst;
 
     public GeostOptions opt = new GeostOptions();
@@ -219,7 +215,7 @@ public final class Setup {
 
     void addObject(GeostObject o) {
         if (objects.containsKey(o.getObjectId())) {
-            LOGGER.info("Trying to add an already existing object. In addObject in Setup");
+            System.out.println("Trying to add an already existing object. In addObject in Setup");
         } else {
             objects.put(o.getObjectId(), o);
         }
@@ -250,10 +246,10 @@ public final class Setup {
         while (itr.hasNext()) {
             int id = itr.next();
             GeostObject o = objects.get(id);
-            LOGGER.info("object id: " + id);
-            LOGGER.info("    shape id: " + o.getShapeId().getLB());
+            System.out.println("object id: " + id);
+            System.out.println("    shape id: " + o.getShapeId().getLB());
             for (int i = 0; i < cst.getDIM(); i++) {
-                LOGGER.info("    Coords x" + i + " : " + o.getCoord(i).getLB() + "    " + o.getCoord(i).getUB());
+                System.out.println("    Coords x" + i + " : " + o.getCoord(i).getLB() + "    " + o.getCoord(i).getUB());
             }
         }
 
@@ -261,7 +257,7 @@ public final class Setup {
         while (itr.hasNext()) {
             int sid = itr.next();
             List<ShiftedBox> sb = shapes.get(sid);
-            LOGGER.info("shape id: " + sid);
+            System.out.println("shape id: " + sid);
             for (int i = 0; i < sb.size(); i++) {
                 StringBuilder offset = new StringBuilder();
                 StringBuilder size = new StringBuilder();
@@ -269,9 +265,9 @@ public final class Setup {
                     offset.append(sb.get(i).getOffset(j)).append("  ");
                     size.append(sb.get(i).getSize(j)).append("  ");
                 }
-                LOGGER.info("    sb" + i + ": ");
-                LOGGER.info("       Offset: " + offset.toString());
-                LOGGER.info("       Size: " + size.toString());
+                System.out.println("    sb" + i + ": ");
+                System.out.println("       Offset: " + offset.toString());
+                System.out.println("       Size: " + size.toString());
             }
         }
     }

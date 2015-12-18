@@ -27,11 +27,10 @@
 
 package org.chocosolver.solver.constraints.nary.geost.util;
 
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Shape;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -47,9 +46,6 @@ import java.util.StringTokenizer;
  * Then to create the environment that the constraint uses all we need to do is call global.Setup.createEnvironment(parser) and give it this object as an argument.
  */
 public final class InputParser {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
-
 
     public static class GeostProblem {
         public int[][] objects;
@@ -128,7 +124,7 @@ public final class InputParser {
 		}
 		catch(Exception e)
 		{
-			LOGGER.error("Unable to open data file: {0}\n{1}", new Object[]{this.path, e});
+			System.err.println("Unable to open data file: "+this.path+"\n"+ e);
 			e.printStackTrace();
 			return false;
 		}

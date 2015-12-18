@@ -28,19 +28,18 @@
 package org.chocosolver.solver.constraints.nary.geost.layers;
 
 import org.chocosolver.memory.IStateInt;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.chocosolver.solver.constraints.nary.geost.util.Pair;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.PropGeost;
 import org.chocosolver.solver.constraints.nary.geost.Setup;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.*;
 import org.chocosolver.solver.constraints.nary.geost.frames.ForbiddenRegionFrame;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
+import org.chocosolver.solver.constraints.nary.geost.util.Pair;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.exception.SolverException;
 import org.chocosolver.solver.propagation.IPropagationEngine;
@@ -66,8 +65,6 @@ class MemoStore {
  */
 @SuppressWarnings({"AccessStaticViaInstance"})
 public final class GeometricKernel {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
 
     private static final int ONE_MILLION = 1000000;
 
@@ -109,7 +106,7 @@ public final class GeometricKernel {
         included = included_;
         this.solver = aSolver;
         this.constraint = aConstraint;
-        LOGGER.info("memo_active=" + memo_);
+        System.out.println("memo_active=" + memo_);
     }
 
     /**
@@ -134,7 +131,7 @@ public final class GeometricKernel {
             for (int rr = get_fr_ptr_a; rr < ACTRS.size() + get_fr_ptr_a; rr++) {
                 int i = rr % ACTRS.size();
                 long tmpTime = System.nanoTime() / ONE_MILLION;
-                //LOGGER.info(ACTRS.get(i)   );
+                //System.out.println(ACTRS.get(i)   );
                 v = intermediateLayer.isFeasible(ACTRS.get(i), true, d, k, o, c, jump);
                 stp.opt.timeIsFeasible += (System.nanoTime() / ONE_MILLION) - tmpTime;
 
@@ -203,7 +200,7 @@ public final class GeometricKernel {
         }
 
         if (stp.opt.debug) {
-            LOGGER.info("FilterCtrs:");
+            System.out.println("FilterCtrs:");
         }
         boolean nonFix = true;
         //?????
@@ -260,12 +257,12 @@ public final class GeometricKernel {
             for (int i = 0; i < oIDs.length; i++) {
                 GeostObject o = stp.getObject(oIDs[i]);
                 if (stp.opt.debug) {
-                    LOGGER.info(String.format("Considering object %d %s --> ", oIDs[i], o));
+                    System.out.println(String.format("Considering object %d %s --> ", oIDs[i], o));
                 }
                 int domainsSize = o.calculateDomainSize();
                 if (!filterObjWP(k, oIDs[i])) {
                     if (stp.opt.debug) {
-                        LOGGER.info("Returning false;");
+                        System.out.println("Returning false;");
                     }
                     return false;
                 } else {
@@ -286,7 +283,7 @@ public final class GeometricKernel {
                         nonFix = true;
                     }
                     if (stp.opt.debug) {
-                        LOGGER.info(String.format("***Result of FilterCstrs:%s", o));
+                        System.out.println(String.format("***Result of FilterCstrs:%s", o));
                     }
                 }
 
@@ -409,7 +406,7 @@ public final class GeometricKernel {
     // In the technical report we pass the Frame also however there is no need here since the Frame is part of the external constraint
     {
         if (stp.opt.debug) {
-            LOGGER.info("GeometricKernel:FilterObj()");
+            System.out.println("GeometricKernel:FilterObj()");
         }
         GeostObject o = stp.getObject(oid);
 
@@ -423,15 +420,15 @@ public final class GeometricKernel {
         }
 
         if ((stp.opt.processing)) {
-            LOGGER.info("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
-            LOGGER.info(String.format("\n/*Processing*/domain(%d,%d,%d,%d,%d);", o.getObjectId(), o.getCoord(0).getLB(), o.getCoord(0).getUB(), o.getCoord(1).getLB(), o.getCoord(1).getUB()));
+            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
+            System.out.println(String.format("\n/*Processing*/domain(%d,%d,%d,%d,%d);", o.getObjectId(), o.getCoord(0).getLB(), o.getCoord(0).getUB(), o.getCoord(1).getLB(), o.getCoord(1).getUB()));
 
             //Draw objects that are instantiated
             for (Integer i : stp.getObjectKeySet()) {
                 GeostObject tmp = stp.getObject(i);
                 if (tmp.coordInstantiated()) {
                     if (tmp.isSphere()) {
-                        LOGGER.info(String.format("\n/*Processing*/sphere_object(%d,%d,%d,%d);", tmp.getCoord(0).getUB(), tmp.getCoord(1).getUB(), tmp.getRadius(), tmp.getObjectId()));
+                        System.out.println(String.format("\n/*Processing*/sphere_object(%d,%d,%d,%d);", tmp.getCoord(0).getUB(), tmp.getCoord(1).getUB(), tmp.getRadius(), tmp.getObjectId()));
                     }
                 }
             }
@@ -440,7 +437,7 @@ public final class GeometricKernel {
 
         if (stp.opt.useNumericEngine) {
             if (engine == null) {
-                LOGGER.info("engine==null");
+                System.out.println("engine==null");
                 engine = new GeostNumeric(stp, 100);
             }
             engine.prune(o, k, o.getRelatedInternalConstraints()); //throws a contradiction exception in case of failure
@@ -480,7 +477,7 @@ public final class GeometricKernel {
      * @return It return false if we couldn't prune the min of Object o, this means that we sweeped the whole space and couldn't prune the min of o.
      */
     boolean pruneMin(GeostObject o, int d, int k, List<InternalConstraint> ictrs) throws ContradictionException {
-        //LOGGER.info("Prune in");
+        //System.out.println("Prune in");
         if (stp.opt.serial != null) {
             try {
                 stp.opt.serial.writeObject(o);
@@ -500,9 +497,9 @@ public final class GeometricKernel {
             c.setCoord(i, o.getCoord(i).getLB()); // Initial position of point
             n.setCoord(i, o.getCoord(i).getUB() + 1); // Upper limits + 1 in the different dimensions
         }
-//        LOGGER.info("A");
+//        System.out.println("A");
         List forbidRegion = getFR(d, k, o, c, n, ictrs, true);
-        //LOGGER.info("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
+        //System.out.println("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
 
         boolean infeasible = (Boolean) forbidRegion.get(0);
         Region f = (Region) forbidRegion.get(1);
@@ -528,9 +525,9 @@ public final class GeometricKernel {
             }
 
 //            Point initial_c = new Point(c);     //create a copy
-//        LOGGER.info("C");
+//        System.out.println("C");
             List adjUp = adjustUp(c, n, o, d, k); // update the position of c to check
-            //LOGGER.info("c:"+c+",n:"+n+",o:"+o+",d:"+d+",k:"+k);
+            //System.out.println("c:"+c+",n:"+n+",o:"+o+",d:"+d+",k:"+k);
             c = (Point) adjUp.get(0);
             n = (Point) adjUp.get(1);
             b = (Boolean) adjUp.get(2);
@@ -541,10 +538,10 @@ public final class GeometricKernel {
 //            if (curDelta.get(delta)==null) curDelta.put(delta,0);
 //            curDelta.put(delta,curDelta.get(delta)+1);
 
-            //LOGGER.info("E:"+c);
+            //System.out.println("E:"+c);
             forbidRegion = getFR(d, k, o, c, n, ictrs, true);
-            //LOGGER.info("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
-            //LOGGER.info("F");
+            //System.out.println("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
+            //System.out.println("F");
             infeasible = (Boolean) forbidRegion.get(0);
             f = (Region) forbidRegion.get(1);
 
@@ -563,7 +560,7 @@ public final class GeometricKernel {
         }
 
         if (b) {
-//            LOGGER.info(initial_c+" -> "+c);
+//            System.out.println(initial_c+" -> "+c);
 //
 //            stp.opt.sum_jumps+=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
 //
@@ -582,7 +579,7 @@ public final class GeometricKernel {
                 throw new SolverException("Prune:unable to serialize parameters param out");
             }
         }
-        //LOGGER.info("Prune out");
+        //System.out.println("Prune out");
         return b;
     }
 
@@ -592,7 +589,7 @@ public final class GeometricKernel {
 
 
     static List adjustUp(Point c, Point n, GeostObject o, int d, int k) {
-        //LOGGER.info("Adjust Up("+c+","+ n+",?,"+d+","+k  +")");
+        //System.out.println("Adjust Up("+c+","+ n+",?,"+d+","+k  +")");
         List<Object> result = new ArrayList<>(3);
         int jPrime = 0;
         int j = k - 1;
@@ -714,7 +711,7 @@ public final class GeometricKernel {
      * @return It return true if we can fix all the objects. Otherwise it returns false.
      */
     public boolean fixAllObjs(int k, int[] oIDs, List<ExternalConstraint> ectrs, List<int[]> ctrlVs, IStateInt idxLastFreeObject) throws ContradictionException {
-        //LOGGER.info("FixallObjs");
+        //System.out.println("FixallObjs");
         for (int i = 0; i < ectrs.size(); i++) {
             ectrs.get(i).setFrame(externalLayer.InitFrameExternalConstraint(ectrs.get(i), oIDs));
 
@@ -826,7 +823,7 @@ public final class GeometricKernel {
         int lastIdx = idxLastFreeObject.get();
         for (int i = 0; i < lastIdx; i++) {
             GeostObject o = stp.getObject(oIDs[i]);
-            //LOGGER.info("Object "+oIDs[i]+" "+o);
+            //System.out.println("Object "+oIDs[i]+" "+o);
             int m = i % nbOfCtrlV;
 
             int[] ctrlV = ctrlVs.get(m);
@@ -864,10 +861,10 @@ public final class GeometricKernel {
                 ICTRS = o.getRelatedInternalConstraints();
             }
 
-//            LOGGER.info(ICTRS_.size()+" "+ICTRS.size());
-//            for (InternalConstraint ic : ICTRS_) LOGGER.info(ic.toString());
-//            LOGGER.info("--");
-//            for (InternalConstraint ic : ICTRS) LOGGER.info(ic.toString());
+//            System.out.println(ICTRS_.size()+" "+ICTRS.size());
+//            for (InternalConstraint ic : ICTRS_) System.out.println(ic.toString());
+//            System.out.println("--");
+//            for (InternalConstraint ic : ICTRS) System.out.println(ic.toString());
 
             long tmpTimePruneFix = System.nanoTime() / ONE_MILLION;
             boolean b = pruneFix(o, k, ctrlV, ICTRS);//do not use o internal constraints
@@ -880,9 +877,9 @@ public final class GeometricKernel {
             relForbReg(o);
 
             //Add the internal constraint of o with itself
-//            LOGGER.info("--");
+//            System.out.println("--");
 //            List<InternalConstraint> tmp = AbsForbReg(o);
-//            for (InternalConstraint ic : tmp) LOGGER.info(ic.toString());
+//            for (InternalConstraint ic : tmp) System.out.println(ic.toString());
 
             List<InternalConstraint> incr_ICTRS = absForbReg(o);
             //Note that the merging has been done in AbsForReg
@@ -946,7 +943,7 @@ public final class GeometricKernel {
                 o.addRelatedInternalConstraint(v.get(j));
             }
         }
-        //LOGGER.info("before");
+        //System.out.println("before");
         //o.print();
         //long tmpTimePruneFix = System.nanoTime() / ONE_MILLION;
         //timePruneFix += ((System.nanoTime() / ONE_MILLION) - tmpTimePruneFix);
@@ -978,9 +975,9 @@ public final class GeometricKernel {
 
         if (!memo.isEmpty()) { //&& (dominates(k,d,c,memo.firstElement(),o)) ) {
             for (int i = 0; i < memo.size(); i++) {
-                //c.print(); LOGGER.info(" dominates "); memo.get(i).print(); LOGGER.info(" ?");
+                //c.print(); System.out.println(" dominates "); memo.get(i).print(); System.out.println(" ?");
                 boolean b = (dominates(k, d, c, memo.get(i), o));
-                //LOGGER.info(b);
+                //System.out.println(b);
                 if (b) {
                     Point new_sweep_point = new Point(k);
                     //Recall that previous objects are all fixed (instantiated)
@@ -1009,7 +1006,7 @@ public final class GeometricKernel {
         boolean printit = false;
 
         if (printit) {
-            LOGGER.info("-- Entering PruneFix() for object " + o.getObjectId());
+            System.out.println("-- Entering PruneFix() for object " + o.getObjectId());
             o.print();
         }
 
@@ -1038,16 +1035,16 @@ public final class GeometricKernel {
         boolean infeasible = (Boolean) forbidRegion.get(0);
         Region f = (Region) forbidRegion.get(1);
         if (printit) {
-            LOGGER.info("getFR region:" + f.toString());
+            System.out.println("getFR region:" + f.toString());
         }
         while (infeasible) {
             if (printit) {
-                LOGGER.info("Full n: ");
+                System.out.println("Full n: ");
                 n.print();
             }
 
             if (printit) {
-                LOGGER.info("while infeasible");
+                System.out.println("while infeasible");
             }
             for (int d = k - 1; d > -1; d--) {
                 dPrime = Math.abs(ctrlV[d + 1]) - 2;
@@ -1059,7 +1056,7 @@ public final class GeometricKernel {
                 }
             }
             if (printit) {
-                LOGGER.info("New n: ");
+                System.out.println("New n: ");
                 n.print();
             }
 
@@ -1084,7 +1081,7 @@ public final class GeometricKernel {
                         }
                     }
                 }
-                LOGGER.info("NO NEXT CANDIDATE WAS FOUND");
+                System.out.println("NO NEXT CANDIDATE WAS FOUND");
                 return false;
             }
 
@@ -1092,9 +1089,9 @@ public final class GeometricKernel {
             //if old object dominates current object o
 
             if ((memo.active) && (memo.m.get(ctrlV) != null)) {
-                //LOGGER.info("getPreviousIteration 2 in:"+c);
+                //System.out.println("getPreviousIteration 2 in:"+c);
                 c = getPreviousIteration(k, ctrlV, o, c, memo.listObj.get(memo.m.get(ctrlV)));
-                //LOGGER.info("getPreviousIteration 2 in:"+c);
+                //System.out.println("getPreviousIteration 2 in:"+c);
 
                 //Recall here that old_o is instantiated(fixed)
                 //c = old_o.coord;
@@ -1104,7 +1101,7 @@ public final class GeometricKernel {
                 //}
             }
             if (printit) {
-                LOGGER.info("Next jump: ");
+                System.out.println("Next jump: ");
                 c.print();
             }
             tmpTimeGetFr = (System.nanoTime() / ONE_MILLION);
@@ -1114,7 +1111,7 @@ public final class GeometricKernel {
             infeasible = (Boolean) forbidRegion.get(0);
             f = (Region) forbidRegion.get(1);
             if (printit) {
-                LOGGER.info("region:" + f.toString());
+                System.out.println("region:" + f.toString());
             }
 
         }
@@ -1220,7 +1217,7 @@ public final class GeometricKernel {
         if (B == null) {
             return candidate;
         }
-//        LOGGER.info("--")  ;
+//        System.out.println("--")  ;
 
 //        int[] lengthc = new int[3];
 //        int[] lengthB = new int[3];
@@ -1274,11 +1271,11 @@ public final class GeometricKernel {
             }
             if (increase) {
                 int size = Math.abs(f.getMinimumBoundary(j) - fr.maximizeSizeOfFBox(true, j, k, f));
-                //LOGGER.info("size:"+size+" "+f.getMinimumBoundary(j)+" "+fr.maximizeSizeOfFBox(true,j,k,f));
+                //System.out.println("size:"+size+" "+f.getMinimumBoundary(j)+" "+fr.maximizeSizeOfFBox(true,j,k,f));
                 size = (int) (((double) size) * localProp);
 
                 int end = f.getMinimumBoundary(j) + size;
-                //LOGGER.info("propSize:"+size+" end:"+end);
+                //System.out.println("propSize:"+size+" end:"+end);
                 f.setMaximumBoundary(j, Math.min(jump.getCoord(j) - 1, end));
             } else {
                 /*CORRECT THIS PART*/
@@ -1309,7 +1306,7 @@ public final class GeometricKernel {
         if (!mode) {
             return getFR(d, k, o, c, n, ictrs, increase);
         }
-//        LOGGER.info(); LOGGER.info("\\begin{itemize}");
+//        System.out.println(); System.out.println("\\begin{itemize}");
 
         Region candidate = null;
 
@@ -1324,9 +1321,9 @@ public final class GeometricKernel {
             }
         }
         if (trace) {
-            LOGGER.info("list of cstrs:");
+            System.out.println("list of cstrs:");
             for (ForbiddenRegion fr : list) {
-                LOGGER.info(fr.getIctrID() + " ");
+                System.out.println(fr.getIctrID() + " ");
             }
         }
 
@@ -1336,12 +1333,12 @@ public final class GeometricKernel {
             Region B, f = null;
             List r = fr.isFeasible(increase, d, k, o, c, n);
             if (trace) {
-                LOGGER.info("\\item IsFeasible$(ictr,increase=" + increase + ",d=" + d + ",k=" + k + ",o=o3" + ",c=" + c + ",n=" + n + ")$ ");
+                System.out.println("\\item IsFeasible$(ictr,increase=" + increase + ",d=" + d + ",k=" + k + ",o=o3" + ",c=" + c + ",n=" + n + ")$ ");
             }
             f = (Region) r.get(1);
             if (trace) {
-                LOGGER.info(String.format("returns $f=%s$ ", f));
-                LOGGER.info(String.format("\\item ProportionalFBox$(ictr,d=%d,k=%d,o=o3,c=%s,n=%s,increase=%s,prop=%s)$ ", d, k, c, n, increase, prop));
+                System.out.println(String.format("returns $f=%s$ ", f));
+                System.out.println(String.format("\\item ProportionalFBox$(ictr,d=%d,k=%d,o=o3,c=%s,n=%s,increase=%s,prop=%s)$ ", d, k, c, n, increase, prop));
             }
             if (f.volume() > (maxVolume * 1.20)) {
                 maxVolumeList.clear();
@@ -1358,7 +1355,7 @@ public final class GeometricKernel {
             for (int p = 0; p < prop.length; p++) {
                 B = proportionalFBox(fr, d, k, o, c, n, increase, prop[p]);
                 if (trace) {
-                    LOGGER.info("returns $B=" + B + "$ ");
+                    System.out.println("returns $B=" + B + "$ ");
                 }
                 if (B.volume() > (maxVolume * 1.20)) {
                     maxVolumeList.clear();
@@ -1371,33 +1368,33 @@ public final class GeometricKernel {
                 }
 
                 if (trace) {
-                    LOGGER.info("fr(" + f.getMinimumBoundary(0) + ',' + f.getMinimumBoundary(1) + ',' + f.getMaximumBoundary(0) + ',' + f.getMaximumBoundary(1) + ");");
+                    System.out.println("fr(" + f.getMinimumBoundary(0) + ',' + f.getMinimumBoundary(1) + ',' + f.getMaximumBoundary(0) + ',' + f.getMaximumBoundary(1) + ");");
                 }
                 if (trace) {
-                    LOGGER.info("fr(" + B.getMinimumBoundary(0) + ',' + B.getMinimumBoundary(1) + ',' + B.getMaximumBoundary(0) + ',' + B.getMaximumBoundary(1) + ");");
+                    System.out.println("fr(" + B.getMinimumBoundary(0) + ',' + B.getMinimumBoundary(1) + ',' + B.getMaximumBoundary(0) + ',' + B.getMaximumBoundary(1) + ");");
                 }
 
 
                 if (trace) {
-                    LOGGER.info("\\item lexMore$(B=" + B + ",f=" + f + ",d=" + d + ",k=" + k + ",increase=" + increase + ")$ ");
+                    System.out.println("\\item lexMore$(B=" + B + ",f=" + f + ",d=" + d + ",k=" + k + ",increase=" + increase + ")$ ");
                 }
                 if (firstTime) {
                     B = lexMore_volume(B, f, d, k, increase);
                     firstTime = false;
                 }
                 if (trace) {
-                    LOGGER.info("\\item $B \\gets " + B + "$ ");
+                    System.out.println("\\item $B \\gets " + B + "$ ");
                 }
 
 
                 if (trace) {
-                    LOGGER.info("\\item lexMore$(candidate=" + candidate + ",B=" + B + ",d=" + d + ",k=" + k + ",increase=" + increase + ")$ ");
+                    System.out.println("\\item lexMore$(candidate=" + candidate + ",B=" + B + ",d=" + d + ",k=" + k + ",increase=" + increase + ")$ ");
                 }
                 candidate = lexMore_volume(candidate, B, d, k, increase);
             }
             //} else {candidate=f;}
             if (trace) {
-                LOGGER.info("\\item $candidate \\gets " + candidate + " $");
+                System.out.println("\\item $candidate \\gets " + candidate + " $");
             }
 
 
@@ -1491,22 +1488,22 @@ public final class GeometricKernel {
     boolean newPruneMin(GeostObject o, int d, int k, List<InternalConstraint> ictrs) throws ContradictionException {
         boolean trace = false;
         if (trace) {
-            LOGGER.info("//in:o" + o.getObjectId() + ':' + o + '(' + ictrs + ')');
+            System.out.println("//in:o" + o.getObjectId() + ':' + o + '(' + ictrs + ')');
         }
         boolean processing = true;
-//        LOGGER.info("{sphereList.clear();   ");
+//        System.out.println("{sphereList.clear();   ");
 //
 //        for (Integer l : stp.getObjectKeySet()) {
 //            Obj otmp=stp.getObject(l);
 //            if (otmp.coordInstantiated()) {
-//            LOGGER.info("sphere("+o.getObjectId()+","+otmp.getRadius()+",");
-//            for (int i=0; i<k; i++) if (i!=k-1) LOGGER.info(otmp.getCoord(i).getLB()+","); else LOGGER.info(otmp.getCoord(i).getLB()+");");
+//            System.out.println("sphere("+o.getObjectId()+","+otmp.getRadius()+",");
+//            for (int i=0; i<k; i++) if (i!=k-1) System.out.println(otmp.getCoord(i).getLB()+","); else System.out.println(otmp.getCoord(i).getLB()+");");
 //            }
 //        }
-//        LOGGER.info("}");
+//        System.out.println("}");
 
         if (stp.opt.serial != null) {
-            LOGGER.info("COUCOU");
+            System.out.println("COUCOU");
             try {
                 stp.opt.serial.writeObject(o);
                 stp.opt.serial.writeObject(d);
@@ -1527,12 +1524,12 @@ public final class GeometricKernel {
             n.setCoord(i, o.getCoord(i).getUB() + 1); // Upper limits + 1 in the different dimensions
         }
 
-        //LOGGER.info("In Figure \\ref{fig:jumpone:"+(phase)+"},%NEXT FIGURE--------"); phase++;
-        //LOGGER.info("\\begin{itemize}");
-        //LOGGER.info("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
+        //System.out.println("In Figure \\ref{fig:jumpone:"+(phase)+"},%NEXT FIGURE--------"); phase++;
+        //System.out.println("\\begin{itemize}");
+        //System.out.println("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
         //double[] prop = { 0.66, 0.5, 0.33};
         List forbidRegion = getBestFR(d, k, o, c, n, ictrs, true, mode, stp.opt.prop);
-        //LOGGER.info(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
+        //System.out.println(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
 
 
         boolean infeasible = (Boolean) forbidRegion.get(0);
@@ -1540,75 +1537,75 @@ public final class GeometricKernel {
         if (processing) {
 
 
-            LOGGER.info("if (phase==" + (stp.opt.phase) + "){");
-            LOGGER.info("sphereList.clear(); container_size(" + stp.getObject(3).getCoord(0).getLB() * 2 + ',' + stp.getObject(3).getCoord(1).getLB() * 2 + ',' + stp.getObject(3).getCoord(2).getLB() * 2 + ");");
+            System.out.println("if (phase==" + (stp.opt.phase) + "){");
+            System.out.println("sphereList.clear(); container_size(" + stp.getObject(3).getCoord(0).getLB() * 2 + ',' + stp.getObject(3).getCoord(1).getLB() * 2 + ',' + stp.getObject(3).getCoord(2).getLB() * 2 + ");");
             for (Integer l : stp.getObjectKeySet()) {
                 GeostObject otmp = stp.getObject(l);
                 if (otmp.coordInstantiated()) {
-                    LOGGER.info(" sphere(" + o.getObjectId() + ',' + otmp.getRadius() + ',');
+                    System.out.println(" sphere(" + o.getObjectId() + ',' + otmp.getRadius() + ',');
                     for (int i = 0; i < k; i++) {
                         if (i != k - 1) {
-                            LOGGER.info(otmp.getCoord(i).getLB() + ",");
+                            System.out.println(otmp.getCoord(i).getLB() + ",");
                         } else {
-                            LOGGER.info(otmp.getCoord(i).getLB() + ");");
+                            System.out.println(otmp.getCoord(i).getLB() + ");");
                         }
                     }
                 }
             }
-            //LOGGER.info("} ");
+            //System.out.println("} ");
             //output constrained space
 //            for (InternalConstraint ic : ictrs) {
 //                if (ic instanceof DistLeqIC) {
 //                    DistLeqIC icd = (DistLeqIC) ic;
 //                    {
 //                    IntVar[] idv=stp.getObject(icd.o1).getCoordinates();
-//                    LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                    System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                    {
 //                    IntVar[] idv=stp.getObject(icd.o2).getCoordinates();
-//                    LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                    System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                }
 //                if (ic instanceof DistGeqIC) {
 //                    DistGeqIC icd = (DistGeqIC) ic;
 //                    {
 //                    IntVar[] idv=stp.getObject(icd.o1).getCoordinates();
-//                    LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                    System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                    {
 //                    IntVar[] idv=stp.getObject(icd.o2).getCoordinates();
-//                    LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                    System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                }
 //
 //            }
 
 
             if (infeasible) {
-                LOGGER.info(";mode=" + mode + ";d=" + d + ';');
-                LOGGER.info("fr(");
+                System.out.println(";mode=" + mode + ";d=" + d + ';');
+                System.out.println("fr(");
                 for (int i = 0; i < k; i++) {
                     if (i != k - 1) {
-                        LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ',');
+                        System.out.println(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ',');
                     } else {
-                        LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ");");
+                        System.out.println(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ");");
                     }
                 }
             }
-            LOGGER.info(" sweep_point(");
+            System.out.println(" sweep_point(");
             for (int i = 0; i < k; i++) {
                 if (i != k - 1) {
-                    LOGGER.info(c.getCoord(i) + ",");
+                    System.out.println(c.getCoord(i) + ",");
                 } else {
-                    LOGGER.info(c.getCoord(i) + ");");
+                    System.out.println(c.getCoord(i) + ");");
                 }
             }
-            LOGGER.info(" jump_point(");
+            System.out.println(" jump_point(");
             for (int i = 0; i < k; i++) {
                 if (i != k - 1) {
-                    LOGGER.info(c.getCoord(i) + ",");
+                    System.out.println(c.getCoord(i) + ",");
                 } else {
-                    LOGGER.info(c.getCoord(i) + ");");
+                    System.out.println(c.getCoord(i) + ");");
                 }
             }
 
-            LOGGER.info("}");
+            System.out.println("}");
             stp.opt.phase++;
         }
 
@@ -1634,9 +1631,9 @@ public final class GeometricKernel {
             }
 
             Point initial_c = new Point(c);     //create a copy
-            //LOGGER.info("\\item AdjutUp$(c="+c+",n="+n+", o=o3, d="+d+",k="+k+",mode="+mode+")$ ");
+            //System.out.println("\\item AdjutUp$(c="+c+",n="+n+", o=o3, d="+d+",k="+k+",mode="+mode+")$ ");
             List adjUp = adjustUp(c, n, o, d, k, mode); // update the position of c to check
-            //LOGGER.info(" returns $[c="+adjUp.get(0)+",n="+adjUp.get(1)+",b="+adjUp.get(2)+",mode="+adjUp.get(3)+"]$ ");
+            //System.out.println(" returns $[c="+adjUp.get(0)+",n="+adjUp.get(1)+",b="+adjUp.get(2)+",mode="+adjUp.get(3)+"]$ ");
             c = (Point) adjUp.get(0);
             n = (Point) adjUp.get(1);
             b = (Boolean) adjUp.get(2);
@@ -1653,41 +1650,41 @@ public final class GeometricKernel {
             }
             curDelta.put(delta, curDelta.get(delta) + 1);
 
-//            LOGGER.info("\\end{itemize}");
-//            LOGGER.info("In Figure \\ref{fig:jumpone:"+(phase)+"},%NEXT FIGURE--------");phase++;
-//            LOGGER.info("\\begin{itemize}");
-            //LOGGER.info("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
+//            System.out.println("\\end{itemize}");
+//            System.out.println("In Figure \\ref{fig:jumpone:"+(phase)+"},%NEXT FIGURE--------");phase++;
+//            System.out.println("\\begin{itemize}");
+            //System.out.println("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
             //double[] prop2 = { 0.66, 0.5, 0.33};
             forbidRegion = getBestFR(d, k, o, c, n, ictrs, true, mode, stp.opt.prop);
-            //LOGGER.info(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
+            //System.out.println(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
             if (processing) {
 
-                LOGGER.info("if (phase==" + (stp.opt.phase) + "){");
-                LOGGER.info("sphereList.clear();");
+                System.out.println("if (phase==" + (stp.opt.phase) + "){");
+                System.out.println("sphereList.clear();");
 
                 for (Integer l : stp.getObjectKeySet()) {
                     GeostObject otmp = stp.getObject(l);
                     if (otmp.coordInstantiated()) {
-                        LOGGER.info(" sphere(" + o.getObjectId() + ',' + otmp.getRadius() + ',');
+                        System.out.println(" sphere(" + o.getObjectId() + ',' + otmp.getRadius() + ',');
                         for (int i = 0; i < k; i++) {
                             if (i != k - 1) {
-                                LOGGER.info(otmp.getCoord(i).getLB() + ",");
+                                System.out.println(otmp.getCoord(i).getLB() + ",");
                             } else {
-                                LOGGER.info(otmp.getCoord(i).getLB() + ");");
+                                System.out.println(otmp.getCoord(i).getLB() + ");");
                             }
                         }
                     }
                 }
-                LOGGER.info("}");
+                System.out.println("}");
 
                 if (infeasible) {
-                    LOGGER.info(";mode=" + mode + ";d=" + d + ';');
-                    LOGGER.info(" fr(");
+                    System.out.println(";mode=" + mode + ";d=" + d + ';');
+                    System.out.println(" fr(");
                     for (int i = 0; i < k; i++) {
                         if (i != k - 1) {
-                            LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ',');
+                            System.out.println(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ',');
                         } else {
-                            LOGGER.info(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ");");
+                            System.out.println(f.getMinimumBoundary(i) + "," + f.getMaximumBoundary(i) + ");");
                         }
                     }
                 }
@@ -1696,41 +1693,41 @@ public final class GeometricKernel {
 //                        DistLeqIC icd = (DistLeqIC) ic;
 //                        {
 //                        IntVar[] idv=stp.getObject(icd.o1).getCoordinates();
-//                        LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                        System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                        {
 //                        IntVar[] idv=stp.getObject(icd.o2).getCoordinates();
-//                        LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                        System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                    }
 //                    if (ic instanceof DistGeqIC) {
 //                        DistGeqIC icd = (DistGeqIC) ic;
 //                        {
 //                        IntVar[] idv=stp.getObject(icd.o1).getCoordinates();
-//                        LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                        System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                        {
 //                        IntVar[] idv=stp.getObject(icd.o2).getCoordinates();
-//                        LOGGER.info("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
+//                        System.out.println("fill(255,0,0,125); sphere(0,"+icd.D/2+","+idv[0].getLB()+","+idv[1].getLB()+","+idv[2].getLB()+");");}
 //                    }
 //
 //                }
 
-                LOGGER.info(" sweep_point(");
+                System.out.println(" sweep_point(");
                 for (int i = 0; i < k; i++) {
                     if (i != k - 1) {
-                        LOGGER.info(c.getCoord(i) + ",");
+                        System.out.println(c.getCoord(i) + ",");
                     } else {
-                        LOGGER.info(c.getCoord(i) + ");");
+                        System.out.println(c.getCoord(i) + ");");
                     }
                 }
-                LOGGER.info(" jump_point(");
+                System.out.println(" jump_point(");
                 for (int i = 0; i < k; i++) {
                     if (i != k - 1) {
-                        LOGGER.info(c.getCoord(i) + ",");
+                        System.out.println(c.getCoord(i) + ",");
                     } else {
-                        LOGGER.info(c.getCoord(i) + ");");
+                        System.out.println(c.getCoord(i) + ");");
                     }
                 }
 
-                LOGGER.info("}");
+                System.out.println("}");
                 stp.opt.phase++;
             }
 
@@ -1755,7 +1752,7 @@ public final class GeometricKernel {
         if (b) {
             o.getCoord(d).updateLowerBound(c.getCoord(d), this.constraint);
             if (trace) {
-                LOGGER.info("//out:o:" + o);
+                System.out.println("//out:o:" + o);
             }
         }
 
@@ -1768,7 +1765,7 @@ public final class GeometricKernel {
                 throw new SolverException("Prune:unable to serialize parameters param out");
             }
         }
-//        LOGGER.info(" Prune out");
+//        System.out.println(" Prune out");
 
         return b;
     }
@@ -1933,7 +1930,7 @@ public final class GeometricKernel {
 //            int i=d;
 //                boolean condition = (( increase && (p.getCoord(i)<n.getCoord(i) )) || ( (!increase) && (p.getCoord(i)>n.getCoord(i ))));
 //                if (!(condition)) {
-//                    LOGGER.info("GeometricKernel:Extend():Invariant 2 failed:p:"+p+" is larger than n:"+n+" on dim:"+i+",pruning dim:"+d+",increase:"+increase);
+//                    System.out.println("GeometricKernel:Extend():Invariant 2 failed:p:"+p+" is larger than n:"+n+" on dim:"+i+",pruning dim:"+d+",increase:"+increase);
 //                    System.exit(-1);
 //                }
 //
@@ -1964,7 +1961,7 @@ public final class GeometricKernel {
 
 //            boolean condition = (( increase && (p.getCoord(d)<cut_point.getCoord(d) )) || ( (!increase) && (p.getCoord(d)>cut_point.getCoord(d))));
 //            if (!condition) {
-//                LOGGER.info("GeometricKernel:Extend2():Invariant 4 failed:(( increase && (p.getCoord(d)<=cut_point.getCoord(d) )) || ( (!increase) && (p.getCoord(d)>=cut_point.getCoord(d))))");
+//                System.out.println("GeometricKernel:Extend2():Invariant 4 failed:(( increase && (p.getCoord(d)<=cut_point.getCoord(d) )) || ( (!increase) && (p.getCoord(d)>=cut_point.getCoord(d))))");
 //                System.exit(-1);
 //
 //            }
@@ -2096,17 +2093,17 @@ public final class GeometricKernel {
 
     Region selectionCriteria(int d_prune, int k, boolean increase, Region box1, Region box2) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/SelectionCriteria(d_prune=" + d_prune + ", k=" + k + ", increase=" + increase + " box1=" + box1 + " ,box2=" + box2 + ')');
+            System.out.println("/*debug*/SelectionCriteria(d_prune=" + d_prune + ", k=" + k + ", increase=" + increase + " box1=" + box1 + " ,box2=" + box2 + ')');
         }
         if (box1 == null) {
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/SelectionCriteria() returns null");
+                System.out.println("/*debug*/SelectionCriteria() returns null");
                 return box2;
             }
         }
         if (box2 == null) {
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/SelectionCriteria() returns null");
+                System.out.println("/*debug*/SelectionCriteria() returns null");
                 return box1;
             }
         }
@@ -2117,7 +2114,7 @@ public final class GeometricKernel {
         if ((box1.ratio() <= 0.1) && (box2.ratio() <= 0.1) && ((!box1.included(box2)) && (!box2.included(box1)))) {
             Region tmp = largestLexBox(d_prune, k, increase, box1, box2);
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/SelectionCriteria() returns " + tmp);
+                System.out.println("/*debug*/SelectionCriteria() returns " + tmp);
             }
             return tmp;
         }
@@ -2169,12 +2166,12 @@ public final class GeometricKernel {
             if (not_same) {
                 if (first_box) {
                     if (stp.opt.debug) {
-                        LOGGER.info("/*debug*/SelectionCriteria() returns " + box1);
+                        System.out.println("/*debug*/SelectionCriteria() returns " + box1);
                     }
                     return box1;
                 } else {
                     if (stp.opt.debug) {
-                        LOGGER.info("/*debug*/SelectionCriteria() returns " + box2);
+                        System.out.println("/*debug*/SelectionCriteria() returns " + box2);
                     }
 
                     return box2;
@@ -2182,7 +2179,7 @@ public final class GeometricKernel {
             } else {
                 Region tmp = largestInvLexBox(d_prune, k, increase, box1, box2);
                 if (stp.opt.debug) {
-                    LOGGER.info("/*debug*/SelectionCriteria() returns " + tmp);
+                    System.out.println("/*debug*/SelectionCriteria() returns " + tmp);
                 }
                 return tmp;
             }
@@ -2190,13 +2187,13 @@ public final class GeometricKernel {
 
         if (won1 > won2) {
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/SelectionCriteria() returns " + box1);
+                System.out.println("/*debug*/SelectionCriteria() returns " + box1);
             }
             return box1;
         }
 
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/SelectionCriteria() returns " + box2);
+            System.out.println("/*debug*/SelectionCriteria() returns " + box2);
         }
         return box2;
 
@@ -2337,7 +2334,7 @@ public final class GeometricKernel {
 //        boolean b = (Boolean) r.fst; int inter = (Integer) r.snd;  //inter is a position in d_prev_least
 //
 //        if (b) {
-//            if (stp.opt.debug) { LOGGER.info("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
+//            if (stp.opt.debug) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
 //
 //            return BuildInterBox(d_prune,d_least,d_prev_least,k,c,n,increase,ictr_c,pos_p,inter);
 //        }
@@ -2355,9 +2352,9 @@ public final class GeometricKernel {
 //        Region box=new Region(k,0);
 //        box.setMinimumBoundary(d_least,pos_l); box.setMaximumBoundary(d_least,pos_l);
 //        box.setMinimumBoundary(d_prev_least,c.getCoord(d_prev_least)); box.setMaximumBoundary(d_prev_least,c.getCoord(d_prev_least));
-//        if (!(ictr_c.insideForbidden(box.pointMin()))) {LOGGER.info("GeometricKernel:GetExtensions():Invariant 1 failed"); System.exit(-1); }
+//        if (!(ictr_c.insideForbidden(box.pointMin()))) {System.out.println("GeometricKernel:GetExtensions():Invariant 1 failed"); System.exit(-1); }
 //        int e_c=ictr_c.maximizeSizeOfFBox(increase,d_prev_least,k,box);
-//        if (!(ictr_g.insideForbidden(box.pointMin()))) {LOGGER.info("GeometricKernel:GetExtensions():Invariant 2 failed"); System.exit(-1); }
+//        if (!(ictr_g.insideForbidden(box.pointMin()))) {System.out.println("GeometricKernel:GetExtensions():Invariant 2 failed"); System.exit(-1); }
 //        int e_g=ictr_g.maximizeSizeOfFBox(increase,d_prev_least,k,box);
 //        return new Pair<Integer,Integer>(e_c,e_g);
 //    }
@@ -2372,19 +2369,19 @@ public final class GeometricKernel {
 //        int eup_c,eup_g;
 //        r = GetExtensions(d_prune,d_least,d_prev_least,k,c,increase,ictr_c,ictr_g,pos_p,up);
 //        eup_c=r.fst;eup_g=r.snd;
-//        //LOGGER.info("/*Processing*/intersection("+d_least+","+low+");");
-//        //LOGGER.info("/*Processing*/intersection("+d_least+","+up+");");
+//        //System.out.println("/*Processing*/intersection("+d_least+","+low+");");
+//        //System.out.println("/*Processing*/intersection("+d_least+","+up+");");
 //
 //        if (eup_c==eup_g) return new Pair<Boolean,Integer>(true,eup_c);
 //        if (cross(increase,elow_c,elow_g,eup_c,eup_g)) {
 //            while (low<=up) {
 //                int mid=((low+up)/2);
-//                //LOGGER.info("/*Processing*/intersection("+d_least+","+mid+");");
+//                //System.out.println("/*Processing*/intersection("+d_least+","+mid+");");
 //                int emid_c,emid_g;
 //                r=GetExtensions(d_prune,d_least,d_prev_least,k,c,increase,ictr_c,ictr_g,pos_p,mid);
 //                emid_c=r.fst; emid_g=r.snd;
-//                //LOGGER.info("/*Processing*/intersection("+d_prev_least+","+emid_c+");");
-//                //LOGGER.info("/*Processing*/intersection("+d_prev_least+","+emid_g+");");
+//                //System.out.println("/*Processing*/intersection("+d_prev_least+","+emid_c+");");
+//                //System.out.println("/*Processing*/intersection("+d_prev_least+","+emid_g+");");
 //
 //                if (emid_c==emid_g) return new Pair<Boolean,Integer>(true,emid_c);
 //                if ((Math.abs(emid_c-emid_g)==1) &&(!one)) {
@@ -2491,7 +2488,7 @@ public final class GeometricKernel {
 
     Region findBoxInter(int d_prune, int d_least, int d_prev_least, int k, Point c, Point g, Point n, boolean increase, ForbiddenRegion ictr_c, ForbiddenRegion ictr_g, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxInter(d_prune=" + d_prune + ", d_least=" + d_least + ", d_prev_least=" + d_prev_least + ", k=" + k + ", c=" + c + ", g=" + g + ", n=" + n + ", increase" + increase + ", ictr_c=" + ictr_c + ", ictr_g=" + ictr_g + ", pos_p=" + pos_p + ')');
+            System.out.println("/*debug*/FindBoxInter(d_prune=" + d_prune + ", d_least=" + d_least + ", d_prev_least=" + d_prev_least + ", k=" + k + ", c=" + c + ", g=" + g + ", n=" + n + ", increase" + increase + ", ictr_c=" + ictr_c + ", ictr_g=" + ictr_g + ", pos_p=" + pos_p + ')');
         }
         if (!((increase && (c.getCoord(d_least) <= g.getCoord(d_least))) || ((!increase) && (c.getCoord(d_least) >= g.getCoord(d_least))))) {
             throw new SolverException("GeometricKernel:Region FindBoxInterIn():invariant1");
@@ -2517,18 +2514,18 @@ public final class GeometricKernel {
 
         if (b) {
             if (stp.opt.processing) {
-                LOGGER.info("\n/*Processing*/intersection(" + d_prune + ',' + inter + ");");
+                System.out.println("\n/*Processing*/intersection(" + d_prune + ',' + inter + ");");
             }
-            //if ((d_prev_least!=d_prune) && (k==2)) {LOGGER.info("GeometricKernel:FindBoxInter():invariant"); }
+            //if ((d_prev_least!=d_prune) && (k==2)) {System.out.println("GeometricKernel:FindBoxInter():invariant"); }
             Region rbox = getGreedyBoxFromJumpVector(d_prev_least, d_prune, k, c, n, inter, ictr_c, increase, pos_p);
             rbox.father = "FindBoxInter";
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/FindBoxInter() returns " + rbox);
+                System.out.println("/*debug*/FindBoxInter() returns " + rbox);
             }
             return rbox;
         }
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxInter() returns null");
+            System.out.println("/*debug*/FindBoxInter() returns null");
         }
         return null;
     }
@@ -2554,7 +2551,7 @@ public final class GeometricKernel {
 //
 //        if ((low_g==up_g)) return new Pair(false,0);
 //        do {
-//            /*invariant*/ if (!(low_g!=up_g)) {LOGGER.info("GometricalKernel:FinBoxInterOut():invariant"); System.exit(-1); };
+//            /*invariant*/ if (!(low_g!=up_g)) {System.out.println("GometricalKernel:FinBoxInterOut():invariant"); System.exit(-1); };
 //            int mid=(low+up)/2;
 //            if (mid==low)
 //                if (low_g) up=low; else low=up;
@@ -2595,7 +2592,7 @@ public final class GeometricKernel {
     @SuppressWarnings({"unchecked"})
     List longestCommonInterval(int d, int k, Point p, ForbiddenRegion ictr, ForbiddenRegion ictr2, Point jump, boolean increase) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/LongestCommonInterval(d=" + d + ", k=" + k + ", p=" + p + ", ictr=" + ictr + ", ictr2=" + ictr2 + ", jump=" + jump + ", increase=" + increase + ')');
+            System.out.println("/*debug*/LongestCommonInterval(d=" + d + ", k=" + k + ", p=" + p + ", ictr=" + ictr + ", ictr2=" + ictr2 + ", jump=" + jump + ", increase=" + increase + ')');
         }
         List result = new ArrayList(3);
         boolean inIctr = ictr.insideForbidden(p);
@@ -2609,7 +2606,7 @@ public final class GeometricKernel {
             result.add(min);
             result.add(max);
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/LongestCommonInterval() returns " + result);
+                System.out.println("/*debug*/LongestCommonInterval() returns " + result);
             }
             return result;
         }
@@ -2633,7 +2630,7 @@ public final class GeometricKernel {
             result.add(min);
             result.add(max);
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/LongestCommonInterval() returns " + result);
+                System.out.println("/*debug*/LongestCommonInterval() returns " + result);
             }
             return result;
         }
@@ -2642,14 +2639,14 @@ public final class GeometricKernel {
         result.add(min);
         result.add(max);
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/LongestCommonInterval() returns " + result);
+            System.out.println("/*debug*/LongestCommonInterval() returns " + result);
         }
         return result;
     }
 
     boolean infeasibleTriangle(Point a, Point b, Point c, ForbiddenRegion ictr, int k) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/InfeasibleTriangle(a=" + a + ", b=" + b + ", c=" + c + ", ictr=" + ictr + ", k=" + k + ')');
+            System.out.println("/*debug*/InfeasibleTriangle(a=" + a + ", b=" + b + ", c=" + c + ", ictr=" + ictr + ", k=" + k + ')');
         }
         if (ictr instanceof DistGeqIC) {
             DistGeqIC dgeqic = (DistGeqIC) ictr;
@@ -2659,7 +2656,7 @@ public final class GeometricKernel {
                             dgeqic.insideForbidden(c)
             );
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/InfeasibleTriangle() returns " + r);
+                System.out.println("/*debug*/InfeasibleTriangle() returns " + r);
             }
 
             return r;
@@ -2676,7 +2673,7 @@ public final class GeometricKernel {
                             dleqic.segInsideForbidden(c, a)
             );
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/InfeasibleTriangle() returns " + r);
+                System.out.println("/*debug*/InfeasibleTriangle() returns " + r);
             }
 
             return r;
@@ -2724,7 +2721,7 @@ public final class GeometricKernel {
 //    Pair<Boolean,Region> FindBoxTriangle(int d_prune, int d_least, int d_prev_least, int k, Point Pra, Point Pdiag, Point n, boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
 //        //Invariant
 //        if ((!(ictr_pradiag.segInsideForbidden(Pra))) || (!(ictr_pradiag.segInsideForbidden(Pdiag))) || (!(ictr_pdiag.segInsideForbidden(Pdiag)))) {
-//            LOGGER.info("Precondition of GeometricKernel.FindBoxTriangle() not verified."); System.exit(-1);
+//            System.out.println("Precondition of GeometricKernel.FindBoxTriangle() not verified."); System.exit(-1);
 //        }
 //        //End Invariant
 //        Point h = Extend(Pdiag,d_prev_least,k,n,ictr_pdiag,increase);
@@ -2745,11 +2742,11 @@ public final class GeometricKernel {
 //        boolean inv_2 = ((!increase) && (f.getCoord(d_prev_least)>=h.getCoord(d_prev_least)));
 //
 //        if (!(inv_1 || inv_2)) {
-//            LOGGER.info("d_prev_least:"+d_prune);
-//            LOGGER.info("increase:"+increase);
-//            LOGGER.info("f:"+f);
-//            LOGGER.info("h:"+h);
-//            LOGGER.info("Second invariant of GeometricKernel.FindBoxTrianle() not verified."); System.exit(-1);
+//            System.out.println("d_prev_least:"+d_prune);
+//            System.out.println("increase:"+increase);
+//            System.out.println("f:"+f);
+//            System.out.println("h:"+h);
+//            System.out.println("Second invariant of GeometricKernel.FindBoxTrianle() not verified."); System.exit(-1);
 //        }
 //        //End invariant
 //
@@ -2762,12 +2759,12 @@ public final class GeometricKernel {
 //
 //        //Invariant
 //        if ((!(ictr_pdiag.segInsideForbidden(h))) || (!(ictr_pradiag.segInsideForbidden(f))) || (!(ictr_pdiag.segInsideForbidden(f)))) {
-//            LOGGER.info("Third Invariant of GeometricKernel.FindBoxTrianle() not verified."); System.exit(-1);
+//            System.out.println("Third Invariant of GeometricKernel.FindBoxTrianle() not verified."); System.exit(-1);
 //        }
 //        //End Invariant
 //
 //        Region box;
-//        LOGGER.info("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+f.getCoord(0)+","+f.getCoord(1)+");");
+//        System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+f.getCoord(0)+","+f.getCoord(1)+");");
 //        if (InfeasibleTriangle(Pra, Pdiag,f,ictr_pradiag) && InfeasibleTriangle(h, Pdiag,f, ictr_pdiag)) {
 //            if (increase) box = new Region(Pra,h); else box = new Region(h, Pra);
 //            return new Pair(true,box);
@@ -2780,7 +2777,7 @@ public final class GeometricKernel {
     Region findBoxTriangleDicho1(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDicho1(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int" + d_dicho_int + "=, k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ')');
+            System.out.println("/*debug*/FindBoxTriangleDicho1(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int" + d_dicho_int + "=, k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ')');
         }
         //Invariant
         if ((!(ictr_pradiag.insideForbidden(Pra))) || (!(ictr_pradiag.insideForbidden(Pdiag))) || (!(ictr_pdiag.insideForbidden(Pdiag)))) {
@@ -2799,15 +2796,15 @@ public final class GeometricKernel {
 
         if (!found) {
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/FindBoxTriangleDicho1() returns null");
+                System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");
             }
             return null;
         }
         String laststr = "";
 
         do {
-//            LOGGER.info("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+up.getCoord(0)+","+up.getCoord(1)+");/*up*/");
-//            LOGGER.info("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+low.getCoord(0)+","+low.getCoord(1)+");/*low*/");
+//            System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+up.getCoord(0)+","+up.getCoord(1)+");/*up*/");
+//            System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+low.getCoord(0)+","+low.getCoord(1)+");/*low*/");
 
             Point cut = new Point(h);
             cut.setCoord(d_dicho_int, min(cut.getCoord(d_dicho_int), up.getCoord(d_dicho_int), increase));
@@ -2821,7 +2818,7 @@ public final class GeometricKernel {
             mid.setCoord(d_dicho_int, ((low.getCoord(d_dicho_int) + up.getCoord(d_dicho_int)) / 2));
             cut = new Point(h);
             cut.setCoord(d_dicho_int, min(cut.getCoord(d_dicho_int), mid.getCoord(d_dicho_int), increase));
-//            LOGGER.info("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+mid.getCoord(0)+","+mid.getCoord(1)+");/*mid*/");
+//            System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+mid.getCoord(0)+","+mid.getCoord(1)+");/*mid*/");
             boolean midOk = checkBoxTriangle(Pra, Pdiag, cut, mid, ictr_pradiag, ictr_pdiag);
             String midstr = format("FindBoxTriangleDicho1:mid:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}", Pra, Pdiag, cut, mid, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
@@ -2853,19 +2850,19 @@ public final class GeometricKernel {
                 ((!increase) && (low.getCoord(d_dicho_int) < up.getCoord(d_dicho_int)))));
 
         if (found_box) {
-            //LOGGER.info("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+best_found.getCoord(0)+","+best_found.getCoord(1)+");/*best_found*///low:"+initial_low+"up:"+initial_up);
+            //System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+best_found.getCoord(0)+","+best_found.getCoord(1)+");/*best_found*///low:"+initial_low+"up:"+initial_up);
 
             Region result = buildBox(k, Pdiag, best_found);
             result.setType("diagonal");
             result.father = "FindBoxTriangleDicho1";
             result.info = laststr;
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/FindBoxTriangleDicho1() returns " + result);
+                System.out.println("/*debug*/FindBoxTriangleDicho1() returns " + result);
             }
             return result;
         }
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDicho1() returns null");
+            System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");
         }
         return null;
     }
@@ -2873,7 +2870,7 @@ public final class GeometricKernel {
     Region findBoxTriangleDicho2(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDicho2(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ')');
+            System.out.println("/*debug*/FindBoxTriangleDicho2(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ')');
         }
         //Invariant
         if ((!(ictr_pradiag.insideForbidden(Pra))) || (!(ictr_pradiag.insideForbidden(Pdiag))) || (!(ictr_pdiag.insideForbidden(Pdiag)))) {
@@ -2967,7 +2964,7 @@ public final class GeometricKernel {
                 ((!increase) && (low.getCoord(d_dicho_int) < up.getCoord(d_dicho_int)))));
 
         if (found) {
-            //LOGGER.info("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+best_found.getCoord(0)+","+best_found.getCoord(1)+");/*best_found*///low:"+initial_low+"up:"+initial_up);
+            //System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+best_found.getCoord(0)+","+best_found.getCoord(1)+");/*best_found*///low:"+initial_low+"up:"+initial_up);
 
             Region result = buildBox(k, Pdiag, best_found);
             result.setType("diagonal");
@@ -2975,12 +2972,12 @@ public final class GeometricKernel {
             result.info = laststr;
             result.case_a_or_c = case_a_or_c;
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/FindBoxTriangleDicho2() returns " + result);
+                System.out.println("/*debug*/FindBoxTriangleDicho2() returns " + result);
             }
             return result;
         }
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDicho2() returns null");
+            System.out.println("/*debug*/FindBoxTriangleDicho2() returns null");
         }
         return null;
     }
@@ -3003,7 +3000,7 @@ public final class GeometricKernel {
     Region checkTriangleDDicho(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p, int mid) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/CheckTriangleDDicho(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ", mid=" + mid + ')');
+            System.out.println("/*debug*/CheckTriangleDDicho(d_prune=" + d_prune + ", d_dicho_ext=" + d_dicho_ext + ", d_dicho_int=" + d_dicho_int + ", k=" + k + ", Pra=" + Pra + ", Pdiag=" + Pdiag + ", n=" + n + ", increase=" + increase + ", ictr_pradiag=" + ictr_pradiag + ", ictr_pdiag=" + ictr_pdiag + ", pos_p=" + pos_p + ", mid=" + mid + ')');
         }
 
         Region box = null;
@@ -3076,7 +3073,7 @@ public final class GeometricKernel {
             }
         }
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/CheckTriangleDDicho() returns " + box);
+            System.out.println("/*debug*/CheckTriangleDDicho() returns " + box);
         }
         return box;
     }
@@ -3085,7 +3082,7 @@ public final class GeometricKernel {
     Region findBoxTriangleDDicho(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDDicho(int d_prune=" + d_prune + ", int d_dicho_ext=" + d_dicho_ext + ", int d_dicho_int=" + d_dicho_int + ", int k=" + k + ", Point Pra=" + Pra + ", Point Pdiag=" + Pdiag + ", Point n=" + n + ",boolean increase=" + increase + ", ForbiddenRegion ictr_pradiag=" + ictr_pradiag + ", ForbiddenRegion ictr_pdiag=" + ictr_pdiag + ", int pos_p=" + pos_p + ')');
+            System.out.println("/*debug*/FindBoxTriangleDDicho(int d_prune=" + d_prune + ", int d_dicho_ext=" + d_dicho_ext + ", int d_dicho_int=" + d_dicho_int + ", int k=" + k + ", Point Pra=" + Pra + ", Point Pdiag=" + Pdiag + ", Point n=" + n + ",boolean increase=" + increase + ", ForbiddenRegion ictr_pradiag=" + ictr_pradiag + ", ForbiddenRegion ictr_pdiag=" + ictr_pdiag + ", int pos_p=" + pos_p + ')');
         }
 
         Pdiag = new Point(Pdiag);//Ensure parameter caller is not modified
@@ -3115,7 +3112,7 @@ public final class GeometricKernel {
                     Point Pdiag_initial = new Point(Pdiag);
                     int pos = ictr_pdiag.maximizeSizeOfFBox(!increase, d_dicho_ext, k, new Region(Pdiag));
                     //if (Min(Pdiag.getCoord(d_dicho_ext),pos,increase)==Pdiag.getCoord(d_dicho_ext)) {
-                    //    LOGGER.info("GeometricKernel:FindBoxTriangleDDicho():Pdiag smaller than extension m=2 increase="+increase+" d_dicho_ext="+d_dicho_ext+" Pra="+Pra+" "+" Pdiaginit:"+Pdiag_initial+" maxSize="+pos);System.exit(-1);
+                    //    System.out.println("GeometricKernel:FindBoxTriangleDDicho():Pdiag smaller than extension m=2 increase="+increase+" d_dicho_ext="+d_dicho_ext+" Pra="+Pra+" "+" Pdiaginit:"+Pdiag_initial+" maxSize="+pos);System.exit(-1);
                     //}
                     Pdiag.setCoord(d_dicho_ext, max(Pra.getCoord(d_dicho_ext), pos, increase));
                     if (!(ictr_pdiag.insideForbidden(Pdiag))) {
@@ -3123,7 +3120,7 @@ public final class GeometricKernel {
                     }
                 }
             }
-            //          if (m==1) { if (!(Pdiag_initial.equalTo(Pdiag))) {LOGGER.info("GeometricKernel:FindBoxTriangleDDicho():Pdiag not equal to Pdiag_initial");System.exit(-1);}}
+            //          if (m==1) { if (!(Pdiag_initial.equalTo(Pdiag))) {System.out.println("GeometricKernel:FindBoxTriangleDDicho():Pdiag not equal to Pdiag_initial");System.exit(-1);}}
             if ((CASE_A_OR_C) || (m == 1)) {
 
                 mid = -1;
@@ -3309,7 +3306,7 @@ public final class GeometricKernel {
             best_sem.case_a_or_c = CASE_A_OR_C;
         }
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/FindBoxTriangleDDicho() returns " + best_sem);
+            System.out.println("/*debug*/FindBoxTriangleDDicho() returns " + best_sem);
         }
 
         return best_sem;
@@ -3335,7 +3332,7 @@ public final class GeometricKernel {
 //            if (scan.getCoord(curcounter)==f.getMaximumBoundary(curcounter)+1) { //dim. exceeded max, reset it
 //                scan.setCoord(curcounter,f.getMinimumBoundary(curcounter)); //reset
 //                curcounter--; //next increment will be made on the preceding dimension
-//                LOGGER.info(scan+" ");
+//                System.out.println(scan+" ");
 //            }
 //            else { //There was an increment without reset; this means we have a new point never explored
 //                curcounter=k-1; //number on the least dimension
@@ -3417,8 +3414,8 @@ public final class GeometricKernel {
         }
 
         if (stp.opt.debug) {
-            LOGGER.info("best_b:" + b);
-            LOGGER.info("/*example*/b:" + b);
+            System.out.println("best_b:" + b);
+            System.out.println("/*example*/b:" + b);
         }
         writeBox(b, increase, false);
 
@@ -3464,7 +3461,7 @@ public final class GeometricKernel {
         //if ((b.father.indexOf("Dicho2")!=-1) && (!b.case_a_or_c) && (b.dicho_ext==1) && (increase==true) ) {
         if (b.father.indexOf("GreedyPoint") != -1) {
             if (stp.opt.debug) {
-                LOGGER.info("*** box:" + b + ";b.father:" + b.father + ";b.mid:" + b.mid + ";b.info:" + b.info + ";b.case_a_or_c:" + b.case_a_or_c + ";b.dicho_ext:" + b.dicho_ext + ";volume:" + b.volume() + ";c=" + c + ";increase=" + increase);
+                System.out.println("*** box:" + b + ";b.father:" + b.father + ";b.mid:" + b.mid + ";b.info:" + b.info + ";b.case_a_or_c:" + b.case_a_or_c + ";b.dicho_ext:" + b.dicho_ext + ";volume:" + b.volume() + ";c=" + c + ";increase=" + increase);
             }
         }
 
@@ -3474,7 +3471,7 @@ public final class GeometricKernel {
 
     Pair<Boolean, Region> getDeltaFRSingle(int d_prune, int k, GeostObject o, Point c, Point n, List<InternalConstraint> ictrs, boolean increase, int delta_prune) {
         if (stp.opt.processing) {
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
+            System.out.println("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
         }
         int d_least = (k - 1 + d_prune) % k;
         if (d_least < 0) {
@@ -3489,9 +3486,9 @@ public final class GeometricKernel {
 
         List<ForbiddenRegion> C_c = setOfCstrsOnPt(c, ictrs);
         if (stp.opt.debug) {
-            LOGGER.info("Set Of Cstrs On c:");
+            System.out.println("Set Of Cstrs On c:");
             for (ForbiddenRegion fr : C_c) {
-                LOGGER.info(fr + " ");
+                System.out.println(fr + " ");
             }
         }
         if (C_c.isEmpty()) {
@@ -3516,7 +3513,7 @@ public final class GeometricKernel {
         }
         //writeBox(best_greedy,increase,false);
         if (stp.opt.debug) {
-            LOGGER.info("/*example*/returns (true," + best_greedy + ')');
+            System.out.println("/*example*/returns (true," + best_greedy + ')');
         }
 
         return new Pair<>(true, best_greedy);
@@ -3524,23 +3521,23 @@ public final class GeometricKernel {
 
     Pair<Boolean, Region> getDeltaFRMultiple(int d_prune, int k, GeostObject o, Point c, Point n, List<InternalConstraint> ictrs, boolean increase, int delta_prune) {
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/GetDeltaFRMultiple(d_prune=" + d_prune + ", k=" + k + ", o=" + o + ", c=" + c + ", n=" + n + ", ictrs=" + ictrs + ", increase=" + increase + ", delta_prune=" + delta_prune + ')');
+            System.out.println("/*debug*/GetDeltaFRMultiple(d_prune=" + d_prune + ", k=" + k + ", o=" + o + ", c=" + c + ", n=" + n + ", ictrs=" + ictrs + ", increase=" + increase + ", delta_prune=" + delta_prune + ')');
         }
 
         if (stp.opt.processing) {
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
+            System.out.println("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
         }
 
         List<ForbiddenRegion> C_c = setOfCstrsOnPt(c, ictrs);
         if (stp.opt.debug) {
-            LOGGER.info("Set Of Cstrs On c:");
+            System.out.println("Set Of Cstrs On c:");
             for (ForbiddenRegion fr : C_c) {
-                LOGGER.info(fr + " ");
+                System.out.println(fr + " ");
             }
         }
         if (C_c.isEmpty()) {
             if (stp.opt.debug) {
-                LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (" + false + ",null)");
+                System.out.println("/*debug*/GetDeltaFRMultiple() returns (" + false + ",null)");
             }
             return new Pair<>(false, null);
 
@@ -3565,7 +3562,7 @@ public final class GeometricKernel {
                 box.setType("single");
                 //writeBox(box,increase,false);
                 if (stp.opt.debug) {
-                    LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true" + box + ')');
+                    System.out.println("/*debug*/GetDeltaFRMultiple() returns (true" + box + ')');
                 }
                 return new Pair<>(true, box);
             }
@@ -3573,7 +3570,7 @@ public final class GeometricKernel {
             List<ForbiddenRegion> C_g = setOfCstrsOnPt(g, ictrs);
             if ((C_g.size() > 1) && stp.opt.firstTimeGetDeltaFR) {
                 stp.opt.firstTimeGetDeltaFR = false;
-                LOGGER.info("Relevant.");
+                System.out.println("Relevant.");
             }
 
             for (ForbiddenRegion ictr_g : C_g) {
@@ -3594,7 +3591,7 @@ public final class GeometricKernel {
 
 //                    if (/*(old_best_box!=null) &&*/ (box_inter!=null) && (best_box==box_inter)){// && (box_inter.volume() > old_best_box.volume())) {
 //                        if (box_inter.father.indexOf("GreedyVector")!=-1) {
-//                            LOGGER.info("*** tmpbox:"+box_inter+";b.father:"+box_inter.father+";b.mid:"+box_inter.mid+";b.info:"+box_inter.info+";b.case_a_or_c:"+box_inter.case_a_or_c+";b.dicho_ext:"+box_inter.dicho_ext+";volume:"+box_inter.volume()+";c="+c+";increase="+increase);
+//                            System.out.println("*** tmpbox:"+box_inter+";b.father:"+box_inter.father+";b.mid:"+box_inter.mid+";b.info:"+box_inter.info+";b.case_a_or_c:"+box_inter.case_a_or_c+";b.dicho_ext:"+box_inter.dicho_ext+";volume:"+box_inter.volume()+";c="+c+";increase="+increase);
 //                        }
 //                    }
 
@@ -3603,7 +3600,7 @@ public final class GeometricKernel {
                     //best_sem = BestVolume2(d_prune,d_prev_least,d_least,k,increase,box_inter,best_sem);
 
                     if (stp.opt.processing) {
-                        LOGGER.info("/*Processing*///Dicho1");
+                        System.out.println("/*Processing*///Dicho1");
                     }
                     if (!(ictr_g.insideForbidden(g))) {
                         throw new SolverException("GeometricKernel:GetBestFR():g not in ictr_g");
@@ -3611,15 +3608,15 @@ public final class GeometricKernel {
 
                     Region box_tri = findBoxTriangleDDicho(d_prune, d_least, d_prev_least, k, c, g, n, increase, ictr_c, ictr_g, pos_p);
 //                    if ((box_tri!=null) &&(box_tri.father.indexOf("Dicho1")!=-1) && (!box_tri.case_a_or_c) && (box_tri.dicho_ext==0) && (increase==true)) {
-//                        LOGGER.info("*** tmpbox:"+box_tri+";box_tri.father:"+box_tri.father+";box_tri.mid:"+box_tri.mid+";box_tri.info:"+box_tri.info+";box_tri.case_a_or_c:"+box_tri.case_a_or_c+";box_tri.dicho_ext:"+box_tri.dicho_ext+";volume:"+box_tri.volume()+";c="+c+";increase="+increase);
+//                        System.out.println("*** tmpbox:"+box_tri+";box_tri.father:"+box_tri.father+";box_tri.mid:"+box_tri.mid+";box_tri.info:"+box_tri.info+";box_tri.case_a_or_c:"+box_tri.case_a_or_c+";box_tri.dicho_ext:"+box_tri.dicho_ext+";volume:"+box_tri.volume()+";c="+c+";increase="+increase);
 //                    }
 
                     writeBox(box_tri, increase, true);
 //                    if (box_tri!=null) {
 //                        box_tri.setType("diagonal");
-//                        LOGGER.info("best_box_tri1:"+box_tri);
+//                        System.out.println("best_box_tri1:"+box_tri);
 //                    }
-//                    LOGGER.info("/*Processing*///exit Dicho1");
+//                    System.out.println("/*Processing*///exit Dicho1");
                     best_box = selectionCriteria(d_prune, k, increase, best_box, box_tri);
 
                     //best_sem = LargestInvLexBox(d_prune,k,increase,best_sem,box_tri);
@@ -3632,7 +3629,7 @@ public final class GeometricKernel {
             List<ForbiddenRegion> C_gpl = setOfCstrsOnPt(gpl, ictrs);//new ArrayList<ForbiddenRegion>();
             if ((C_gpl.size() > 1) && stp.opt.firstTimeGetDeltaFR) {
                 stp.opt.firstTimeGetDeltaFR = false;
-                LOGGER.info("Relevant.");
+                System.out.println("Relevant.");
             }
 
             for (ForbiddenRegion ictr_gpl : C_gpl) {
@@ -3651,7 +3648,7 @@ public final class GeometricKernel {
 
                     Region box_tri = findBoxTriangleDDicho(d_prune, d_prev_least, d_least, k, c, gpl, n, increase, ictr_c, ictr_gpl, pos_p);
 //                    if ((box_tri!=null) &&(box_tri.father.indexOf("Dicho1")!=-1) && (!box_tri.case_a_or_c) && (box_tri.dicho_ext==0) && (increase==true)) {
-//                        LOGGER.info("*** tmpbox:"+box_tri+";box_tri.father:"+box_tri.father+";box_tri.mid:"+box_tri.mid+";box_tri.info:"+box_tri.info+";box_tri.case_a_or_c:"+box_tri.case_a_or_c+";box_tri.dicho_ext:"+box_tri.dicho_ext+";volume:"+box_tri.volume()+";c="+c+";increase="+increase);
+//                        System.out.println("*** tmpbox:"+box_tri+";box_tri.father:"+box_tri.father+";box_tri.mid:"+box_tri.mid+";box_tri.info:"+box_tri.info+";box_tri.case_a_or_c:"+box_tri.case_a_or_c+";box_tri.dicho_ext:"+box_tri.dicho_ext+";volume:"+box_tri.volume()+";c="+c+";increase="+increase);
 //                    }
 
                     writeBox(box_tri, increase, true);
@@ -3669,7 +3666,7 @@ public final class GeometricKernel {
             for (ForbiddenRegion ictr_c_prime : C_c) {//Point c plays the role of diagonal
                 if (ictr_c != ictr_c_prime) {
                     if (stp.opt.processing) {
-                        LOGGER.info("/*Processing*///Dicho3");
+                        System.out.println("/*Processing*///Dicho3");
                     }
                     Region box = findBoxTriangleDDicho(d_prune, d_least, d_prev_least, k, g, c, n, increase, ictr_c, ictr_c_prime, pos_p);
                     writeBox(box, increase, true);
@@ -3679,7 +3676,7 @@ public final class GeometricKernel {
                     //best_sem = BestVolume2(d_prune,d_prev_least,d_least,k,increase,box,best_sem);
 
                     if (stp.opt.processing) {
-                        LOGGER.info("/*Processing*///Dicho4");
+                        System.out.println("/*Processing*///Dicho4");
                     }
                     if (!(ictr_c_prime.insideForbidden(c))) {
                         throw new SolverException("GeometricKernel:GetBestFR():c not in ictr_c_prime");
@@ -3687,7 +3684,7 @@ public final class GeometricKernel {
 
                     box = findBoxTriangleDDicho(d_prune, d_prev_least, d_least, k, gpl, c, n, increase, ictr_c, ictr_c_prime, pos_p);
 //                    if ((box!=null) && (box.father.indexOf("Dicho1")!=-1) && (!box.case_a_or_c) && (box.dicho_ext==0) && (increase==true)) {
-//                        LOGGER.info("*** tmpbox:"+box+";box.father:"+box.father+";box.mid:"+box.mid+";box.info:"+box.info+";box.case_a_or_c:"+box.case_a_or_c+";box.dicho_ext:"+box.dicho_ext+";volume:"+box.volume()+";c="+c+";increase="+increase);
+//                        System.out.println("*** tmpbox:"+box+";box.father:"+box.father+";box.mid:"+box.mid+";box.info:"+box.info+";box.case_a_or_c:"+box.case_a_or_c+";box.dicho_ext:"+box.dicho_ext+";volume:"+box.volume()+";c="+c+";increase="+increase);
 //                    }
 
                     writeBox(box, increase, true);
@@ -3722,7 +3719,7 @@ public final class GeometricKernel {
             //best_volume = BestVolume(d_prune,k,i  ncrease,best_volume,box_greedy);
 
             if ((d_prev_least != d_prune) && (k == 2)) {
-                LOGGER.info("GeometricKernel:GetDeltaFRMultiple():invariant (d_prev_least!=d_prune) && (k==2)");
+                System.out.println("GeometricKernel:GetDeltaFRMultiple():invariant (d_prev_least!=d_prune) && (k==2)");
             }
 
             Region box_vector = null;
@@ -3740,7 +3737,7 @@ public final class GeometricKernel {
             best_box = selectionCriteria(d_prune, k, increase, best_box, box_vector);
 //            if ((old_best_box!=null) && (box_vector!=null) && (best_box==box_vector) && (box_vector.volume() > old_best_box.volume())) {
 //                if (box_vector.father.indexOf("GreedyVector")!=-1) {
-//                    LOGGER.info("*** tmpbox:"+box_vector+";b.father:"+box_vector.father+";b.mid:"+box_vector.mid+";b.info:"+box_vector.info+";b.case_a_or_c:"+box_vector.case_a_or_c+";b.dicho_ext:"+box_vector.dicho_ext+";volume:"+box_vector.volume()+";c="+c+";increase="+increase);
+//                    System.out.println("*** tmpbox:"+box_vector+";b.father:"+box_vector.father+";b.mid:"+box_vector.mid+";b.info:"+box_vector.info+";b.case_a_or_c:"+box_vector.case_a_or_c+";b.dicho_ext:"+box_vector.dicho_ext+";volume:"+box_vector.volume()+";c="+c+";increase="+increase);
 //                }
 //            }
 
@@ -3753,7 +3750,7 @@ public final class GeometricKernel {
         }//endfor
 
         if (stp.opt.debug) {
-            LOGGER.info("best_box:" + best_box);
+            System.out.println("best_box:" + best_box);
         }
 
 
@@ -3777,7 +3774,7 @@ public final class GeometricKernel {
 //        }
 
         if (stp.opt.debug) {
-            LOGGER.info("/*debug*/GetDeltaFRMultiple() returns (true," + best_box + ')');
+            System.out.println("/*debug*/GetDeltaFRMultiple() returns (true," + best_box + ')');
         }
         return new Pair<>(true, best_box);
 
@@ -3785,7 +3782,7 @@ public final class GeometricKernel {
 
 
 //    Pair<Boolean,Region> GetDeltaFROld(int d_prune, int k, Obj o, Point c, Point n, Vector<InternalConstraint> ictrs, boolean increase, int delta_prune) {
-//        if (stp.opt.debug) { LOGGER.info("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");"); };
+//        if (stp.opt.debug) { System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");"); };
 //        boolean trace=false;
 //        Region best_box=null;
 //        boolean inter_in=false; boolean inter_out=false;
@@ -3818,12 +3815,12 @@ public final class GeometricKernel {
 //            }
 //            Vector<ForbiddenRegion> C_g = SetOfCstrsOnPt(g,k,ictrs);//new ArrayList<ForbiddenRegion>();
 ////            for (InternalConstraint ictr:ictrs) {
-////                if (!(ictr instanceof ForbiddenRegion)) {LOGGER.info("GetDeltatFR():not a ForviddenRegion constraint."); System.exit(-1);}
+////                if (!(ictr instanceof ForbiddenRegion)) {System.out.println("GetDeltatFR():not a ForviddenRegion constraint."); System.exit(-1);}
 ////                ForbiddenRegion fr = (ForbiddenRegion) ictr;
 ////                if (fr.segInsideForbidden(g))  C_g.add(fr);
 ////            }
 //
-//            if ((C_g.size()>1) && stp.firstTimeGetDeltaFR) { stp.firstTimeGetDeltaFR=false; LOGGER.info("Relevant.");};
+//            if ((C_g.size()>1) && stp.firstTimeGetDeltaFR) { stp.firstTimeGetDeltaFR=false; System.out.println("Relevant.");};
 //
 //
 //            for (ForbiddenRegion ictr_g : C_g) {
@@ -3873,7 +3870,7 @@ public final class GeometricKernel {
 //                        if ((best_box!=r.snd)) {
 //                            best_box=r.snd;
 //                            if (inter_in) best_box.setType("inter_in"); if (inter_out) best_box.setType("inter_out");
-//                            if (stp.opt.debug) { LOGGER.info("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
+//                            if (stp.opt.debug) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
 //                        }
 //                    }
 //                }
@@ -3915,20 +3912,20 @@ public final class GeometricKernel {
 //            //no_box=r.fst; best_box=r.snd;
 //
 //            if ((!foundBoxTriangle) && (!found_inter_once)) {
-//                LOGGER.info("/*Processing*/ //not found");
+//                System.out.println("/*Processing*/ //not found");
 //                Region reg_vector=GetGreedyBoxFromVector(d_prev_least,d_prune,k,c,n,ictr_c,increase,delta_prune,no_box,best_box);
 //                if (no_box || GreatestVolume(d_prev_least,k,increase,reg_vector,best_box)) {no_box=false; best_box=reg_vector; best_box.setType("vector"); };
 //                if (no_box || GreatestVolume(d_prev_least,k,increase,reg_std,best_box)) {no_box=false; best_box=reg_std; best_box.setType("single");};
 //            }
 //            else {
-//                LOGGER.info("/*Processing*/ //found");
+//                System.out.println("/*Processing*/ //found");
 //                if (no_box || LargestInverseLex(d_prev_least,k,increase,reg_std,best_box))
 //                {no_box=false; best_box=reg_std;best_box.setType("single"); };
 //            }
 //        }//endfor
 //
 //        if (stp.opt.debug) {
-//            LOGGER.info("\n/*Processing*/fr("+best_box.getMinimumBoundary(0)+","+best_box.getMaximumBoundary(0)+","+best_box.getMinimumBoundary(1)+","+best_box.getMaximumBoundary(1)+",\""+best_box.getType()+"\");");
+//            System.out.println("\n/*Processing*/fr("+best_box.getMinimumBoundary(0)+","+best_box.getMaximumBoundary(0)+","+best_box.getMinimumBoundary(1)+","+best_box.getMaximumBoundary(1)+",\""+best_box.getType()+"\");");
 //        }
 //
 ////        if ((!foundBoxTriangle) && (!found_inter_once)) {
@@ -3960,10 +3957,10 @@ public final class GeometricKernel {
             }
             if (chosen_box != null) {
                 if (!chosen_box.getType().equals("diagonal+rect")) {
-                    LOGGER.info("\n/*Processing*/" + function + '(' + chosen_box.getMinimumBoundary(0) + ',' + chosen_box.getMaximumBoundary(0) + ',' + chosen_box.getMinimumBoundary(1) + ',' + chosen_box.getMaximumBoundary(1) + ",\"" + chosen_box.getType() + "\",\"\",0);");
+                    System.out.println("\n/*Processing*/" + function + '(' + chosen_box.getMinimumBoundary(0) + ',' + chosen_box.getMaximumBoundary(0) + ',' + chosen_box.getMinimumBoundary(1) + ',' + chosen_box.getMaximumBoundary(1) + ",\"" + chosen_box.getType() + "\",\"\",0);");
                 } else {
                     if (chosen_box.mid == -1) {
-                        LOGGER.info("\n/*Processing*/" + function + '(' + chosen_box.getMinimumBoundary(0) + ',' + chosen_box.getMaximumBoundary(0) + ',' + chosen_box.getMinimumBoundary(1) + ',' + chosen_box.getMaximumBoundary(1) + ",\""
+                        System.out.println("\n/*Processing*/" + function + '(' + chosen_box.getMinimumBoundary(0) + ',' + chosen_box.getMaximumBoundary(0) + ',' + chosen_box.getMinimumBoundary(1) + ',' + chosen_box.getMaximumBoundary(1) + ",\""
                                 + "diagonal\",\"\"," + chosen_box.orientation + ");");
                     } else {
 
@@ -3999,12 +3996,12 @@ public final class GeometricKernel {
                             }
 
 
-                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                            System.out.println("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
                                     + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "low_diag\",\"" + info + "\"," + chosen_box.orientation + ");");
                             box = new Region(chosen_box);
                             box.setMinimumBoundary(box.dicho_ext, box.mid);
-                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                            System.out.println("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
                                     + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "diagonal\",\"" + info + "\"," + chosen_box.orientation + ");");
                         } else {
@@ -4038,12 +4035,12 @@ public final class GeometricKernel {
                                 }
                             }
 
-                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                            System.out.println("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
                                     + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "low_diag\",\"" + info + "\"," + chosen_box.orientation + ");");
                             box = new Region(chosen_box);
                             box.setMaximumBoundary(box.dicho_ext, box.mid);
-                            LOGGER.info("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
+                            System.out.println("\n/*Processing*/" + function + '(' + box.getMinimumBoundary(0) + ',' + box.getMaximumBoundary(0) + ','
                                     + box.getMinimumBoundary(1) + ',' + box.getMaximumBoundary(1) + ",\""
                                     + "diagonal\",\"" + info + "\"," + chosen_box.orientation + ");");
                         }
@@ -4072,7 +4069,7 @@ public final class GeometricKernel {
 
             diff = Math.abs(c.getCoord(d_current) - initial_c.getCoord(d_current));
             if (stp.opt.debug) {
-                LOGGER.info("last_diff:" + last_diff + ";diff:" + diff + "d:" + d + ";d_current" + d_current);
+                System.out.println("last_diff:" + last_diff + ";diff:" + diff + "d:" + d + ";d_current" + d_current);
             }
 
 
@@ -4233,13 +4230,13 @@ public final class GeometricKernel {
             n.setCoord(i, o.getCoord(i).getUB() + 1);
         }
         if ((stp.opt.processing)) {
-            LOGGER.info("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
+            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
             //Draw objects that are instantiated
             for (Integer i : stp.getObjectKeySet()) {
                 GeostObject tmp = stp.getObject(i);
                 if (tmp.coordInstantiated()) {
                     if (tmp.isSphere()) {
-                        LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
+                        System.out.println("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                     }
                 }
             }
@@ -4252,9 +4249,9 @@ public final class GeometricKernel {
                         DistLeqIC dlic = (DistLeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
                             if (dlic.hasDistanceVar()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.getDistanceVar().getUB() + ",\"LeqVar\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.getDistanceVar().getUB() + ",\"LeqVar\");");
                             } else {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
                             }
                         }
                     }
@@ -4262,21 +4259,21 @@ public final class GeometricKernel {
                         DistGeqIC dlic = (DistGeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
                             if (dlic.hasDistanceVar()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.getDistanceVar().getLB() + ",\"GeqVar\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.getDistanceVar().getLB() + ",\"GeqVar\");");
                             } else {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
                             }
                         }
                     }
 
                     if (fr instanceof DistLinearIC) {
                         DistLinearIC dlic = (DistLinearIC) fr;
-                        LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
+                        System.out.println("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                     }
 
                 }
             }
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
+            System.out.println("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
 
         }
 
@@ -4315,11 +4312,11 @@ public final class GeometricKernel {
 
 
             if (stp.opt.debug) {
-                LOGGER.info("/*example*/Adjustup(c=" + c + ",n=" + n + ",o=" + o + ",d=" + d + ",k=" + k + ')');
+                System.out.println("/*example*/Adjustup(c=" + c + ",n=" + n + ",o=" + o + ",d=" + d + ",k=" + k + ')');
             }
             List adjUp = adjustUp(c, n, o, d, k); // update the position of c to check
             if (stp.opt.debug) {
-                LOGGER.info("/*example*/returns c=" + c + ",n=" + n + ",b=" + b);
+                System.out.println("/*example*/returns c=" + c + ",n=" + n + ",b=" + b);
             }
 
             c = (Point) adjUp.get(0);
@@ -4335,13 +4332,13 @@ public final class GeometricKernel {
                 cdpl = c.getCoord(d_prev_least);
             }
             if ((stp.opt.processing) && (Math.abs(c.getCoord(d) - initial_c.getCoord(d)) != 0)) {
-                LOGGER.info("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
+                System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
                 //Draw objects that are instantiated
                 for (Integer i : stp.getObjectKeySet()) {
                     GeostObject tmp = stp.getObject(i);
                     if (tmp.coordInstantiated()) {
                         if (tmp.isSphere()) {
-                            LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
+                            System.out.println("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                         }
                     }
                 }
@@ -4354,25 +4351,25 @@ public final class GeometricKernel {
                         if (fr instanceof DistLeqIC) {
                             DistLeqIC dlic = (DistLeqIC) fr;
                             if ((stp.getObject(dlic.o2).coordInstantiated()) && (!(stp.getObject(dlic.o1).coordInstantiated()))) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
                             }
                         }
                         if (fr instanceof DistGeqIC) {
                             DistGeqIC dlic = (DistGeqIC) fr;
                             if ((stp.getObject(dlic.o2).coordInstantiated()) && (!(stp.getObject(dlic.o1).coordInstantiated()))) {
 
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
                             }
                         }
                         if (fr instanceof DistLinearIC) {
                             DistLinearIC dlic = (DistLinearIC) fr;
-                            LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
+                            System.out.println("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                         }
 
 
                     }
                 }
-                LOGGER.info("\n/*Processing*/new_position(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
+                System.out.println("\n/*Processing*/new_position(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
             }
 
 
@@ -4438,7 +4435,7 @@ public final class GeometricKernel {
             o.getCoord(d).updateLowerBound(c.getCoord(d), this.constraint);
         }
 //        if (stp.opt.debug) {
-//            LOGGER.info("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
+//            System.out.println("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
 //        }
 
         return b;
@@ -4460,13 +4457,13 @@ public final class GeometricKernel {
         }
 
         if ((stp.opt.processing)) {
-            LOGGER.info("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
+            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
             //Draw objects that are instantiated
             for (Integer i : stp.getObjectKeySet()) {
                 GeostObject tmp = stp.getObject(i);
                 if (tmp.coordInstantiated()) {
                     if (tmp.isSphere()) {
-                        LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
+                        System.out.println("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                     }
                 }
             }
@@ -4478,25 +4475,25 @@ public final class GeometricKernel {
                     if (fr instanceof DistLeqIC) {
                         DistLeqIC dlic = (DistLeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
-                            LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
+                            System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
                         }
                     }
                     if (fr instanceof DistGeqIC) {
                         DistGeqIC dlic = (DistGeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
-                            LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
+                            System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
                         }
                     }
 
                     if (fr instanceof DistLinearIC) {
                         DistLinearIC dlic = (DistLinearIC) fr;
-                        LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
+                        System.out.println("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                     }
 
 
                 }
             }
-            LOGGER.info("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
+            System.out.println("\n/*Processing*/sweep_point(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
 
         }
 
@@ -4533,7 +4530,7 @@ public final class GeometricKernel {
             List adjUp = adjustDown(c, n, o, d, k); // update the position of c to check
             stp.opt.nbr_jumps++;
             local_nbr_jumps++;
-            //LOGGER.info(" returns $[c="+adjUp.get(0)+",n="+adjUp.get(1)+",b="+adjUp.get(2)+",mode="+adjUp.get(3)+"]$ ");
+            //System.out.println(" returns $[c="+adjUp.get(0)+",n="+adjUp.get(1)+",b="+adjUp.get(2)+",mode="+adjUp.get(3)+"]$ ");
             c = (Point) adjUp.get(0);
             n = (Point) adjUp.get(1);
             b = (Boolean) adjUp.get(2);
@@ -4547,14 +4544,14 @@ public final class GeometricKernel {
 
 
             if ((stp.opt.processing) && (Math.abs(c.getCoord(d) - initial_c.getCoord(d)) != 0)) {
-                LOGGER.info("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
+                System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;" + "case " + (stp.opt.phase++) + ":\n/*Processing*/beginchunk();");
 
                 //Draw objects that are instantiated
                 for (Integer i : stp.getObjectKeySet()) {
                     GeostObject tmp = stp.getObject(i);
                     if (tmp.coordInstantiated()) {
                         if (tmp.isSphere()) {
-                            LOGGER.info("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
+                            System.out.println("\n/*Processing*/sphere_object(" + tmp.getCoord(0).getUB() + ',' + tmp.getCoord(1).getUB() + ',' + tmp.getRadius() + ',' + tmp.getObjectId() + ");");
                         }
                     }
                 }
@@ -4566,24 +4563,24 @@ public final class GeometricKernel {
                         if (fr instanceof DistLeqIC) {
                             DistLeqIC dlic = (DistLeqIC) fr;
                             if (stp.getObject(dlic.o2).coordInstantiated()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Leq\");");
                             }
                         }
                         if (fr instanceof DistGeqIC) {
                             DistGeqIC dlic = (DistGeqIC) fr;
                             if (stp.getObject(dlic.o2).coordInstantiated()) {
-                                LOGGER.info("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
+                                System.out.println("\n/*Processing*/constraint(" + stp.getObject(dlic.o2).getCoord(0).getUB() + ',' + stp.getObject(dlic.o2).getCoord(1).getUB() + ',' + dlic.D + ",\"Geq\");");
                             }
                         }
                         if (fr instanceof DistLinearIC) {
                             DistLinearIC dlic = (DistLinearIC) fr;
-                            LOGGER.info("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
+                            System.out.println("\n/*Processing*/constraint(" + dlic.a[0] + ',' + dlic.a[1] + ',' + dlic.b + ",\"Linear\");");
                         }
 
 
                     }
                 }
-                LOGGER.info("\n/*Processing*/new_position(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
+                System.out.println("\n/*Processing*/new_position(" + c.getCoord(0) + ',' + c.getCoord(1) + ");");
 
             }
 
@@ -4641,7 +4638,7 @@ public final class GeometricKernel {
             o.getCoord(d).updateUpperBound(c.getCoord(d), this.constraint);
         }
         //       if (stp.opt.debug) {
-        //           LOGGER.info("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
+        //           System.out.println("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
         //      }
 
         if (local_nbr_jumps > stp.opt.max_nbr_jumps) {
@@ -4658,7 +4655,7 @@ public final class GeometricKernel {
 //    Pair<Boolean,Region> GetAnalyticFR(int d, int k,Obj o,Point c,Point n,Vector<ForbiddenRegion> ictrs,boolean increase){
 //        Vector<ForbiddenRegion> C_c = new ArrayList<ForbiddenRegion>();
 //        for (InternalConstraint ictr:ictrs) {
-//            if (!(ictr instanceof ForbiddenRegion)) {LOGGER.info("GetDeltatFR():not a ForviddenRegion constraint."); System.exit(-1);}
+//            if (!(ictr instanceof ForbiddenRegion)) {System.out.println("GetDeltatFR():not a ForviddenRegion constraint."); System.exit(-1);}
 //            ForbiddenRegion fr = (ForbiddenRegion) ictr;
 //            if (fr.segInsideForbidden(c))  C_c.add(fr);
 //        }
@@ -4800,11 +4797,11 @@ public final class GeometricKernel {
         for (int i = 1; i < stp.getObjectKeySet().size() - 1; i++) { //last one is the center circle, supp. a strict order on objects!
             IntVar Dprec = getD(i - 1);
             if (Dprec.isInstantiated()) {
-                LOGGER.info("D of oid:" + (i - 1) + " is instantiated:" + Dprec);
+                System.out.println("D of oid:" + (i - 1) + " is instantiated:" + Dprec);
                 IntVar D = getD(i);
                 int oldSup = D.getUB();
                 int newSup = Dprec.getValue() - (stp.getObject(i).getRadius() + stp.getObject(i - 1).getRadius());
-                LOGGER.info("D:[" + D.getLB() + ',' + D.getUB() + "] oldSup:" + oldSup + " newSup:" + newSup);
+                System.out.println("D:[" + D.getLB() + ',' + D.getUB() + "] oldSup:" + oldSup + " newSup:" + newSup);
                 if (newSup >= oldSup) {
                     continue;
                 }

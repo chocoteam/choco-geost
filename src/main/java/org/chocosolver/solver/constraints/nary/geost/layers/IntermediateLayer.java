@@ -28,11 +28,10 @@
 package org.chocosolver.solver.constraints.nary.geost.layers;
 
 
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
 import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
 import org.chocosolver.solver.exception.SolverException;
 
@@ -45,8 +44,6 @@ import java.util.List;
  * some Internal Constraint ictr
  */
 public final class IntermediateLayer {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
 
     /**
      * Creates an IntermediateLayer instance. Actually this class just provides functionality so
@@ -77,7 +74,7 @@ public final class IntermediateLayer {
                 result = lexInFeasibleForAvoidHoles();
                 break;
             default:
-                LOGGER.error("A call to LexFeasible with incorrect ictrID parameter");
+                System.err.println("A call to LexFeasible with incorrect ictrID parameter");
         }
         return result;
     }
@@ -142,7 +139,7 @@ public final class IntermediateLayer {
                 result = cardInfeasibleForAvoidHoles();
                 break;
             default:
-                LOGGER.error("A call to CardInfeasible with incorrect ictr parameter");
+                System.err.println("A call to CardInfeasible with incorrect ictr parameter");
         }
         return result;
     }
