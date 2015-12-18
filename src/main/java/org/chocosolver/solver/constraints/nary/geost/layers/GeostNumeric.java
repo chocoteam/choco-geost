@@ -27,14 +27,13 @@
 
 package org.chocosolver.solver.constraints.nary.geost.layers;
 
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Setup;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.DistGeq;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.DistLeq;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.DistLinear;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.ExternalConstraint;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
 import org.chocosolver.solver.constraints.nary.geost.internalConstraints.InternalConstraint;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.exception.SolverException;
@@ -58,8 +57,6 @@ import static java.text.MessageFormat.format;
  * To change this template use File | Settings | File Templates.
  */
 public final class GeostNumeric {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
 
     private Setup stp = null;
     private int paramid = 0; //each detected new param gets a param id which is the id of the param in the extengine
@@ -326,7 +323,7 @@ public final class GeostNumeric {
 
         int k = stp.getObject(0).getCoordinates().length;
         double volume = (double) volume();
-        LOGGER.info("volume:" + String.format("%f", volume));
+        System.out.println("volume:" + String.format("%f", volume));
 
         isThick = 1.0;
         double inverse_k = 1.0 / ((double) k);
@@ -495,13 +492,13 @@ public final class GeostNumeric {
 
     public Region propagate(GeostObject o) {
         //Returns a region /*containing*/ the solution
-        LOGGER.info("--Entering GeostNumeric:propagate()");
+        System.out.println("--Entering GeostNumeric:propagate()");
 
         int k = o.getCoordinates().length;
         if (contractorName.get(o) == null) {
             return new Region(k, o);
         }
-        LOGGER.info("calling contract(object" + o.getObjectId() + ") because of contractorName.get(" + o + ")=" + contractorName.get(o));
+        System.out.println("calling contract(object" + o.getObjectId() + ") because of contractorName.get(" + o + ")=" + contractorName.get(o));
 
         /*engine.contract("object" + o.getObjectId());
         Region r = new Region(k, o.getObjectId());
@@ -515,7 +512,7 @@ public final class GeostNumeric {
             r.setMinimumBoundary(i, lb_int);
             r.setMaximumBoundary(i, ub_int);
         }
-        LOGGER.info("--Exiting GeostNumeric:propagate()");
+        System.out.println("--Exiting GeostNumeric:propagate()");
         return r;
         */
         throw new UnsupportedOperationException("geost does not support complex form");
@@ -523,7 +520,7 @@ public final class GeostNumeric {
 
 
     public void prune(GeostObject o, int k, List<InternalConstraint> ictrs) throws ContradictionException {
-        LOGGER.info("Entering Prune:" + o + "," + k + "," + ictrs);
+        System.out.println("Entering Prune:" + o + "," + k + "," + ictrs);
         //returns no value, but throws a contradiction exception if failure occurs
         //call engine to propagate
         synchronize();
@@ -534,7 +531,7 @@ public final class GeostNumeric {
             int max = box.getMaximumBoundary(i);
             int min_ori = o.getCoord(i).getLB();
             int max_ori = o.getCoord(i).getUB();
-            LOGGER.info("Prune():" + o + "[" + i + "] updated to [" + min + "," + max + "]");
+            System.out.println("Prune():" + o + "[" + i + "] updated to [" + min + "," + max + "]");
 
             boolean var_was_modified = false;
             if (min > min_ori) {
@@ -551,12 +548,12 @@ public final class GeostNumeric {
             if (var_was_modified) {
                 synchronize(o.getCoord(i)); //(A)
             }
-            LOGGER.info("Prune():synchronize o[" + i + "]=[" + o.getCoord(i).getLB() + "," + o.getCoord(i).getUB() + "]");
+            System.out.println("Prune():synchronize o[" + i + "]=[" + o.getCoord(i).getLB() + "," + o.getCoord(i).getUB() + "]");
         }
         //The following line is an alternative to the synchronization in line (A)
         //if (b) synchronize(o); //(B)
         //(B) is simply more computational-expensive than (A)
-        LOGGER.info("Exiting Prune()");
+        System.out.println("Exiting Prune()");
     }
 
 

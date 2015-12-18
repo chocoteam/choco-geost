@@ -162,7 +162,7 @@ public class PropGeost extends Propagator<IntVar> {
     }
 
     @Override
-    protected int getPropagationConditions(int vIdx) {
+    public int getPropagationConditions(int vIdx) {
         return IntEventType.ALL_EVENTS;
     }
 
@@ -172,7 +172,7 @@ public class PropGeost extends Propagator<IntVar> {
         //        for (int i=0; i<l; i++)
         //            LOGGER.info("Geost_Constraint:propagate():vars["+i+"]:"+vars[i]+","+vars[i].getInf()+","+vars[i].getSup());
         //        LOGGER.info("----propagate");          ^
-        if (stp.opt.debug) LOGGER.info("GeostConstraint:propagate()");
+        if (stp.opt.debug) System.out.println("GeostConstraint:propagate()");
         filter();
     }
 
@@ -209,7 +209,7 @@ public class PropGeost extends Propagator<IntVar> {
     }
 
     private void filterWithGreedyMode() throws ContradictionException {
-        if (stp.opt.debug) LOGGER.info("Geost_Constraint:filterWithGreedyMode()");
+        if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithGreedyMode()");
         s.getEnvironment().worldPush();    //Starts a new branch in the search tree
         boolean result = false;
 
@@ -242,14 +242,14 @@ public class PropGeost extends Propagator<IntVar> {
             tmpTime = (System.nanoTime() / 1000000);
             //s.getSearchStrategy().restoreBestSolution();
 
-            sol.restore();
+            sol.restore(solver);
             stp.opt.handleSolution3 += ((System.nanoTime() / 1000000) - tmpTime);
         }
     }
 
 
     private void filterWithoutGreedyMode() throws ContradictionException {
-        if (stp.opt.debug) LOGGER.info("Geost_Constraint:filterWithoutGreedyMode()");
+        if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithoutGreedyMode()");
         if (!geometricKernel.filterCtrs(cst.getDIM(), oIDs, stp.getConstraints()))
             this.contradiction(null, "geost");
     }

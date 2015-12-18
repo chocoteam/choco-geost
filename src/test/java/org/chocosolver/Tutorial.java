@@ -25,10 +25,6 @@ package org.chocosolver; /**
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.slf4j.LoggerFactory;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.ICF;
@@ -47,6 +43,9 @@ import org.chocosolver.solver.search.strategy.ISF;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 import org.chocosolver.util.ESat;
+import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -58,8 +57,6 @@ import java.util.*;
  * @since 17/01/2014
  */
 public class Tutorial {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
 
 
     public static Constraint geost(int dim, List<GeostObject> objects, List<ShiftedBox> shiftedBoxes, List<ExternalConstraint> eCtrs) {
@@ -367,7 +364,7 @@ public class Tutorial {
         }
         for (int i = 0; i < obj2.size(); i++) {
             for (int d = 0; d < this.dim; d++) {
-                LOGGER.info("" + obj2.get(i).getCoordinates()[d].getLB() + "    " + obj2.get(i).getCoordinates()[d].getUB());
+                System.out.println("" + obj2.get(i).getCoordinates()[d].getLB() + "    " + obj2.get(i).getCoordinates()[d].getUB());
             }
 
         }
@@ -519,7 +516,7 @@ public class Tutorial {
             st.append(MessageFormat.format("Object {0}: ", o.getObjectId()));
             for (int j = 0; j < dim; j++)
                 st.append(MessageFormat.format("{0} ", o.getCoordinates()[j]));
-            LOGGER.info(st.toString());
+            System.out.println(st.toString());
         }
     }
 

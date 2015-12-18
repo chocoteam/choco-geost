@@ -27,10 +27,9 @@
 
 package org.chocosolver.solver.constraints.nary.geost.util;
 
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.VF;
 
@@ -39,8 +38,6 @@ import java.util.List;
 import java.util.Random;
 
 public final class RandomProblemGenerator {
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
-
     private List<GeostObject> objects;
     private List<ShiftedBox> sBoxes;
     private Solver m;
@@ -68,7 +65,7 @@ public final class RandomProblemGenerator {
 
     private void generateRandomProblem(int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength) {
         if (nbOfShapes > nbOfShiftedBoxes) {
-            LOGGER.info("The number of shifted boxes should be greater or equal to the number of shapes");
+            System.out.println("The number of shifted boxes should be greater or equal to the number of shapes");
             return;
         }
 

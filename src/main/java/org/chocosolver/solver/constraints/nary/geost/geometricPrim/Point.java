@@ -27,8 +27,6 @@
 
 package org.chocosolver.solver.constraints.nary.geost.geometricPrim;
 
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 
 import static java.lang.System.arraycopy;
@@ -38,7 +36,6 @@ import static java.lang.System.arraycopy;
  */
 public final class Point implements Serializable {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
     //this class serves as Point object. The dimension of the point is d Dimensional.
 
     private int coords[];
@@ -46,7 +43,7 @@ public final class Point implements Serializable {
 
     public void print() {
         for (int i = 0; i < this.dim; i++) {
-            LOGGER.info(this.coords[i] + " ");
+            System.out.println(this.coords[i] + " ");
         }
     }
 

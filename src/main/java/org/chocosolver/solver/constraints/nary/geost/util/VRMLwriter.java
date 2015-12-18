@@ -28,11 +28,10 @@
 package org.chocosolver.solver.constraints.nary.geost.util;
 
 
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.Setup;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -52,8 +51,6 @@ public final class VRMLwriter {
     private VRMLwriter() {
     }
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
-
     public static final String VRML_OUTPUT_FOLDER = "";
 
 
@@ -66,7 +63,7 @@ public final class VRMLwriter {
         str = "" + outPut + name + ".wrl";
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(str));
-            LOGGER.info("writing the VRML to : {0}", str);
+            System.out.println("writing the VRML to : "+ str);
             Iterator itr;
             itr = s.objects.keySet().iterator();
 
@@ -214,11 +211,11 @@ public final class VRMLwriter {
 
                 out.close();
             } else
-                LOGGER.error("Dimension is not 2 nor 3 therefore no VRML file was written.");
+                System.err.println("Dimension is not 2 nor 3 therefore no VRML file was written.");
 
 
         } catch (IOException e) {
-            LOGGER.error("ERROR; Couldn't write VRML file");
+            System.err.println("ERROR; Couldn't write VRML file");
         }
 
 

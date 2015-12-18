@@ -28,16 +28,15 @@
 package org.chocosolver.solver.constraints.nary.geost.layers;
 
 
-import org.chocosolver.solver.constraints.nary.geost.frames.Frame;
-import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
-import org.slf4j.LoggerFactory;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.Setup;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.*;
 import org.chocosolver.solver.constraints.nary.geost.frames.DistLinearFrame;
 import org.chocosolver.solver.constraints.nary.geost.frames.ForbiddenRegionFrame;
+import org.chocosolver.solver.constraints.nary.geost.frames.Frame;
 import org.chocosolver.solver.constraints.nary.geost.frames.NonOverlappingFrame;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
+import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
 import org.chocosolver.solver.constraints.nary.geost.util.Pair;
@@ -53,8 +52,6 @@ import java.util.List;
  * should be able to create the corresponding FRAME and generate the corresponding internal constraints.
  */
 public final class ExternalLayer {
-
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger("geost");
 
     Constants cst;
     Setup stp;
@@ -179,16 +176,17 @@ public final class ExternalLayer {
             while (true) {
                 Region r = new Region(cst.getDIM(), o.getObjectId());
                 for (int j = 0; j < cst.getDIM(); j++) {
-                    int max = stp.getShape(o.getShapeId().getLB()).get(set[0][pointer[0]]).getOffset(j);
-                    int min = stp.getShape(o.getShapeId().getLB()).get(set[0][pointer[0]]).getOffset(j) + stp.getShape(o.getShapeId().getLB()).get(set[0][pointer[0]]).getSize(j);
-                    int curDomVal = o.getShapeId().nextValue(o.getShapeId().getLB());
-                    for (int s = 1; s < m; s++) {
-                        max = Math.max(max, stp.getShape(curDomVal).get(set[s][pointer[s]]).getOffset(j));
-                        min = Math.min(min, stp.getShape(curDomVal).get(set[s][pointer[s]]).getOffset(j) + stp.getShape(curDomVal).get(set[s][pointer[s]]).getSize(j));
-                        curDomVal = o.getShapeId().nextValue(curDomVal);
+                    int st = Integer.MAX_VALUE;
+                    int stl = Integer.MIN_VALUE;
+                    int s = 0;
+                    int ub = o.getShapeId().getUB();
+                    for (int v = o.getShapeId().getLB(); v <= ub; v = o.getShapeId().nextValue(v)) {
+                        st = Math.min(st, stp.getShape(v).get(set[s][pointer[s]]).getOffset(j));
+                        stl = Math.max(stl, stp.getShape(v).get(set[s][pointer[s]]).getOffset(j)) + stp.getShape(v).get(set[s][pointer[s]]).getSize(j);
+                        s++;
                     }
-                    r.setMinimumBoundary(j, o.getCoord(j).getUB() + max + 1);
-                    r.setMaximumBoundary(j, o.getCoord(j).getLB() + min - 1);
+                    r.setMinimumBoundary(j, o.getCoord(j).getUB() + st + 1);
+                    r.setMaximumBoundary(j, o.getCoord(j).getLB() + stl - 1);
                 }
                 regions.add(r);
                 for (int j = m - 1; j >= 0; j--) {
@@ -283,7 +281,7 @@ public final class ExternalLayer {
         int dim = new_ob.adjacent(last_ob);
         if ((dim != -1) && (!new_ob.sameSize(last_ob, dim))) dim = -1;
         if (dim != -1) new_ob.merge(last_ob, dim); //merge the two objects
-//        if (dim!=-1) LOGGER.info("after merge:"+new_ob);
+//        if (dim!=-1) System.out.println("after merge:"+new_ob);
 
         return new Pair<>(new_ob, dim != -1);
 
@@ -294,53 +292,54 @@ public final class ExternalLayer {
 
         // Since non_overlapping constraint then we will generate outbox constraints
         List<InternalConstraint> ictrs = new ArrayList<>();
-        List<ShiftedBox> sb = stp.getShape(o.getShapeId().getLB());
+        List<ShiftedBox> shiftboxes = stp.getShape(o.getShapeId().getLB());
         Iterator<Integer> itr;
         itr = ectr.getFrame().getRelForbidRegions().keySet().iterator();
-        boolean printit = false;
+        boolean printit = true;
         while (itr.hasNext()) {
             int i = itr.next();
             if (!(o.getObjectId() == i)) {
-                for (int k = 0; k < sb.size(); k++) {
+                for (ShiftedBox sb : shiftboxes) {
                     // We will generate an outbox constraint corresponding to each relative forbidden region we already generated
                     // for the shifted boxes of the shape corresponding to the Obj o
 
                     // here we go into the relative forbidden regions
                     loop:
-                    for (int l = 0; l < ectr.getFrame().getRelForbidRegions(i).size(); l++) {
+//                    for (int l = 0; l < ectr.getFrame().getRelForbidRegions(i).size(); l++) {
+                    for (Region r : ectr.getFrame().getRelForbidRegions(i)) {
                         int[] t = new int[cst.getDIM()];
                         int[] s = new int[cst.getDIM()];
                         for (int j = 0; j < cst.getDIM(); j++) {
-                            int min = ectr.getFrame().getRelForbidRegions(i).get(l).getMinimumBoundary(j) - sb.get(k).getOffset(j) - sb.get(k).getSize(j);
-                            int max = ectr.getFrame().getRelForbidRegions(i).get(l).getMaximumBoundary(j) - sb.get(k).getOffset(j);
+                            int min = r.getMinimumBoundary(j) - sb.getOffset(j) - sb.getSize(j);
+                            int max = r.getMaximumBoundary(j) - sb.getOffset(j);
 
                             s[j] = max - min + 1; // length of the jth coordinate
                             if (s[j] <= 0) // since the length is negative
                                 continue loop;
                             t[j] = min; // It is the offset. lower left corner.
 
-                            if (printit) LOGGER.info(o.getObjectId() + " " + j + " " + o);
+                            if (printit) System.out.println(o.getObjectId() + " " + j + " " + o);
                             int supDom = o.getCoord(j).getUB();// + sb.get(k).getOffset(j) + sb.get(k).getSize(j);
                             int infDom = o.getCoord(j).getLB();// + sb.get(k).getOffset(j) ;
-                            int maxObj = o.getCoord(j).getUB() + sb.get(k).getOffset(j) + sb.get(k).getSize(j) - 1;
+                            int maxObj = o.getCoord(j).getUB() + sb.getOffset(j) + sb.getSize(j) - 1;
                             if (maxObj > o.getCoord(j).getUB()) maxObj = o.getCoord(j).getUB();
-                            int minObj = o.getCoord(j).getLB() + sb.get(k).getOffset(j);
+                            int minObj = o.getCoord(j).getLB() + sb.getOffset(j);
                             if (minObj < o.getCoord(j).getLB()) minObj = o.getCoord(j).getLB();
 
-                            if (printit) LOGGER.info("box: " + t[j] + " " + s[j]);
-                            if (printit) LOGGER.info("dom: " + minObj + " " + maxObj);
+                            if (printit) System.out.println("box: " + t[j] + " " + s[j]);
+                            if (printit) System.out.println("dom: " + minObj + " " + maxObj);
 
 
                             if ((supDom < t[j]) || (infDom > t[j] + s[j])) {
                                 // this means the intersection of dom(o.x) and the region forbidden region associated with Outbox(t,s) is empty. In the other words all
                                 // the placement space is feasible for o.x according to the constraint Outbox(t,s)
-                                if (printit) LOGGER.info("skip");
+                                if (printit) System.out.println("skip");
                                 continue loop;
                             }
                             if ((maxObj < t[j]) || (minObj > t[j] + s[j])) {
                                 // this means the intersection of dom(o.x) and the region forbidden region associated with Outbox(t,s) is empty. In the other words all
                                 // the placement space is feasible for o.x according to the constraint Outbox(t,s)
-                                if (printit) LOGGER.info("skip2");
+                                if (printit) System.out.println("skip2");
                                 continue loop;
                             }
 
@@ -350,7 +349,7 @@ public final class ExternalLayer {
                                 //     s[j] = Math.min(maxObj, t[j] + s[j]) - t[j]  ;
                             }
 
-                            if (printit) LOGGER.info("result box: " + t[j] + " " + s[j]);
+                            if (printit) System.out.println("result box: " + t[j] + " " + s[j]);
 
 
                         }
