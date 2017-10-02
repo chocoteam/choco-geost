@@ -27,12 +27,11 @@
 
 package org.chocosolver.solver.constraints.nary.geost.util;
 
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Shape;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -99,11 +98,11 @@ public final class InputParser {
         return this.sb;
     }
 
-    public boolean parse(Solver solver) throws IOException {
+    public boolean parse(Model model) throws IOException {
         if (path != null) {
-            return this.parseFile(solver);
+            return this.parseFile(model);
         } else if (gp != null) {
-            return this.parseGP(solver);
+            return this.parseGP(model);
         }
         return false;
     }
@@ -114,7 +113,7 @@ public final class InputParser {
      *
      * @return The function returns false if there was an error during the parsing otherwise it returns true.
      */
-    public boolean parseFile(Solver solver) throws IOException {
+    public boolean parseFile(Model model) throws IOException {
 
 		BufferedReader bin = null;
         try{
@@ -167,7 +166,7 @@ public final class InputParser {
 			        	case 2:
 			        		String temp2 = st.nextToken();
 			        		tokenNb++;
-			        		shape = VF.enumerated("sid_" + indice, Integer.valueOf(temp), Integer.valueOf(temp2), solver);
+			        		shape = model.intVar("sid_" + indice, Integer.valueOf(temp), Integer.valueOf(temp2), false);
 			        		break;
 			        }
 			        
@@ -192,7 +191,7 @@ public final class InputParser {
 				        			tokenNb++;
 			        			}
 			        		}
-			        		coord[i] = VF.bounded("x"+"_"+indice+"_" + i, lowerBound, upperBound, solver);
+			        		coord[i] = model.intVar("x"+"_"+indice+"_" + i, lowerBound, upperBound, true);
 			        	}
 			        }
 			        else if(tokenNb > (3 + ( 2 * this.dim)))
@@ -218,15 +217,15 @@ public final class InputParser {
 			        		}
 			        		if(i == 0)
 			        		{
-			        			start = VF.bounded("start_"+indice, lowerBound, upperBound, solver);
+			        			start = model.intVar("start_"+indice, lowerBound, upperBound, true);
 			        		}
 			        		else if(i == 1)
 			        		{
-			        			duration = VF.bounded("duration_"+indice, lowerBound, upperBound, solver);
+			        			duration = model.intVar("duration_"+indice, lowerBound, upperBound, true);
 			        		}	
 			        		else if(i == 2)
 			        		{
-			        			end = VF.bounded("end_"+(indice++), lowerBound, upperBound, solver);
+			        			end = model.intVar("end_"+(indice++), lowerBound, upperBound, true);
 			        		}
 			        	}
 			        }
@@ -321,21 +320,21 @@ public final class InputParser {
      *
      * @return The function returns false if there was an error during the parsing otherwise it returns true.
      */
-    public boolean parseGP(Solver solver) {
+    public boolean parseGP(Model model) {
 
 		// Objects:
         for(int i =0; i < gp.objects.length; i++){
             int j =0;
             int id = gp.objects[i][j++];
-            IntVar shape = VF.enumerated("sid_" + i, gp.objects[i][j++], gp.objects[i][j++], solver);
+            IntVar shape = model.intVar("sid_" + i, gp.objects[i][j++], gp.objects[i][j++], false);
             IntVar[] coord = new IntVar[this.dim];
             for(int k = 0; k < this.dim; k++){
-                coord[k] = VF.bounded("x_" + i + "_" + k, gp.objects[i][j++], gp.objects[i][j++], solver);
+                coord[k] = model.intVar("x_" + i + "_" + k, gp.objects[i][j++], gp.objects[i][j++], true);
             }
 
-            IntVar start = VF.enumerated("start_" + i, gp.objects[i][j++], gp.objects[i][j++], solver);
-            IntVar duration= VF.enumerated("duration_" + i, gp.objects[i][j++], gp.objects[i][j++], solver);
-            IntVar end= VF.enumerated("end_" + i, gp.objects[i][j++], gp.objects[i][j], solver);
+            IntVar start = model.intVar("start_" + i, gp.objects[i][j++], gp.objects[i][j++], false);
+            IntVar duration= model.intVar("duration_" + i, gp.objects[i][j++], gp.objects[i][j++], false);
+            IntVar end= model.intVar("end_" + i, gp.objects[i][j++], gp.objects[i][j], false);
             GeostObject o = new GeostObject(this.dim, id, shape, coord, start, duration, end);
 	        obj.add(o);
         }

@@ -176,17 +176,16 @@ public final class ExternalLayer {
             while (true) {
                 Region r = new Region(cst.getDIM(), o.getObjectId());
                 for (int j = 0; j < cst.getDIM(); j++) {
-                    int st = Integer.MAX_VALUE;
-                    int stl = Integer.MIN_VALUE;
-                    int s = 0;
-                    int ub = o.getShapeId().getUB();
-                    for (int v = o.getShapeId().getLB(); v <= ub; v = o.getShapeId().nextValue(v)) {
-                        st = Math.min(st, stp.getShape(v).get(set[s][pointer[s]]).getOffset(j));
-                        stl = Math.max(stl, stp.getShape(v).get(set[s][pointer[s]]).getOffset(j)) + stp.getShape(v).get(set[s][pointer[s]]).getSize(j);
-                        s++;
+                    int max = stp.getShape(o.getShapeId().getLB()).get(set[0][pointer[0]]).getOffset(j);
+                    int min = stp.getShape(o.getShapeId().getLB()).get(set[0][pointer[0]]).getOffset(j) + stp.getShape(o.getShapeId().getLB()).get(set[0][pointer[0]]).getSize(j);
+                    int curDomVal = o.getShapeId().nextValue(o.getShapeId().getLB());
+                    for (int s = 1; s < m; s++) {
+                        max = Math.max(max, stp.getShape(curDomVal).get(set[s][pointer[s]]).getOffset(j));
+                        min = Math.min(min, stp.getShape(curDomVal).get(set[s][pointer[s]]).getOffset(j) + stp.getShape(curDomVal).get(set[s][pointer[s]]).getSize(j));
+                        curDomVal = o.getShapeId().nextValue(curDomVal);
                     }
-                    r.setMinimumBoundary(j, o.getCoord(j).getUB() + st + 1);
-                    r.setMaximumBoundary(j, o.getCoord(j).getLB() + stl - 1);
+                    r.setMinimumBoundary(j, o.getCoord(j).getUB() + max + 1);
+                    r.setMaximumBoundary(j, o.getCoord(j).getLB() + min - 1);
                 }
                 regions.add(r);
                 for (int j = m - 1; j >= 0; j--) {
@@ -291,27 +290,26 @@ public final class ExternalLayer {
     private List<InternalConstraint> genInternalCtrsForNonOverlapping(NonOverlapping ectr, GeostObject o) {
 
         // Since non_overlapping constraint then we will generate outbox constraints
-        List<InternalConstraint> ictrs = new ArrayList<>();
-        List<ShiftedBox> shiftboxes = stp.getShape(o.getShapeId().getLB());
+        List<InternalConstraint> ictrs = new ArrayList<InternalConstraint>();
+        List<ShiftedBox> sb = stp.getShape(o.getShapeId().getLB());
         Iterator<Integer> itr;
         itr = ectr.getFrame().getRelForbidRegions().keySet().iterator();
-        boolean printit = true;
+        boolean printit = false;
         while (itr.hasNext()) {
             int i = itr.next();
             if (!(o.getObjectId() == i)) {
-                for (ShiftedBox sb : shiftboxes) {
+                for (int k = 0; k < sb.size(); k++) {
                     // We will generate an outbox constraint corresponding to each relative forbidden region we already generated
                     // for the shifted boxes of the shape corresponding to the Obj o
 
                     // here we go into the relative forbidden regions
                     loop:
-//                    for (int l = 0; l < ectr.getFrame().getRelForbidRegions(i).size(); l++) {
-                    for (Region r : ectr.getFrame().getRelForbidRegions(i)) {
+                    for (int l = 0; l < ectr.getFrame().getRelForbidRegions(i).size(); l++) {
                         int[] t = new int[cst.getDIM()];
                         int[] s = new int[cst.getDIM()];
                         for (int j = 0; j < cst.getDIM(); j++) {
-                            int min = r.getMinimumBoundary(j) - sb.getOffset(j) - sb.getSize(j);
-                            int max = r.getMaximumBoundary(j) - sb.getOffset(j);
+                            int min = ectr.getFrame().getRelForbidRegions(i).get(l).getMinimumBoundary(j) - sb.get(k).getOffset(j) - sb.get(k).getSize(j);
+                            int max = ectr.getFrame().getRelForbidRegions(i).get(l).getMaximumBoundary(j) - sb.get(k).getOffset(j);
 
                             s[j] = max - min + 1; // length of the jth coordinate
                             if (s[j] <= 0) // since the length is negative
@@ -321,9 +319,9 @@ public final class ExternalLayer {
                             if (printit) System.out.println(o.getObjectId() + " " + j + " " + o);
                             int supDom = o.getCoord(j).getUB();// + sb.get(k).getOffset(j) + sb.get(k).getSize(j);
                             int infDom = o.getCoord(j).getLB();// + sb.get(k).getOffset(j) ;
-                            int maxObj = o.getCoord(j).getUB() + sb.getOffset(j) + sb.getSize(j) - 1;
+                            int maxObj = o.getCoord(j).getUB() + sb.get(k).getOffset(j) + sb.get(k).getSize(j) - 1;
                             if (maxObj > o.getCoord(j).getUB()) maxObj = o.getCoord(j).getUB();
-                            int minObj = o.getCoord(j).getLB() + sb.getOffset(j);
+                            int minObj = o.getCoord(j).getLB() + sb.get(k).getOffset(j);
                             if (minObj < o.getCoord(j).getLB()) minObj = o.getCoord(j).getLB();
 
                             if (printit) System.out.println("box: " + t[j] + " " + s[j]);
@@ -374,6 +372,21 @@ public final class ExternalLayer {
             }
         }
         return ictrs;
+    }
+
+    private boolean useful_absolute_fr(int min, int max, int[]s, int[]t, int j, int lb, int ub) {
+        if(min < lb){
+            min = lb;
+        }
+        if(max > ub){
+            max = ub;
+        }
+        if(min > max){
+            return false;
+        }
+        s[j] = max - min + 1; // length of the jth coordinate
+        t[j] = min; // It is the offset. lower left corner.
+        return true;
     }
 
 

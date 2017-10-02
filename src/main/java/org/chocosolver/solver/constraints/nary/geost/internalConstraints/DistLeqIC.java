@@ -716,7 +716,7 @@ public final class DistLeqIC extends ForbiddenRegion {
                 System.out.println("DistLeqIC:" + this + " updateDistance:[" + DVar.getLB() + "," + DVar.getUB() + "]");
             }
             if ((DVar.getLB() > DVar.getUB()) || (DVar.getUB() < DVar.getLB())) {
-                stp.g_constraint.contradiction(null, "geost");
+                stp.g_constraint.fails();
             }
             return true;
         }

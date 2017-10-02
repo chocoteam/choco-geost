@@ -27,11 +27,10 @@
 
 package org.chocosolver.solver.constraints.nary.geost.util;
 
-import org.chocosolver.solver.Solver;
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,30 +39,31 @@ import java.util.Random;
 public final class RandomProblemGenerator {
     private List<GeostObject> objects;
     private List<ShiftedBox> sBoxes;
-    private Solver m;
+    private Model m;
     private int nbOfObjects;
     private int nbOfShapes;
     private int nbOfShiftedBoxes;
     private int maxLength;
     private int dim;
+    private long seed;
 
-    public RandomProblemGenerator(int k, int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength) {
+    public RandomProblemGenerator(int k, int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength, long seed) {
         objects = new ArrayList<>();
         sBoxes = new ArrayList<>();
-        m = new Solver();
+        m = new Model();
         this.nbOfObjects = nbOfObjects;
         this.nbOfShapes = nbOfShapes;
         this.nbOfShiftedBoxes = nbOfShiftedBoxes;
         this.maxLength = maxLength;
         this.dim = k;
-
+        this.seed = seed;
     }
 
     public void generateProb() {
-        generateRandomProblem(this.nbOfObjects, this.nbOfShapes, this.nbOfShiftedBoxes, this.maxLength);
+        generateRandomProblem(this.nbOfObjects, this.nbOfShapes, this.nbOfShiftedBoxes, this.maxLength, this.seed);
     }
 
-    private void generateRandomProblem(int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength) {
+    private void generateRandomProblem(int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength, long seed) {
         if (nbOfShapes > nbOfShiftedBoxes) {
             System.out.println("The number of shifted boxes should be greater or equal to the number of shapes");
             return;
@@ -87,7 +87,7 @@ public final class RandomProblemGenerator {
             shapeIDS.remove(index);
 
 
-            IntVar shapeId = VF.fixed("sid", sid, m);
+            IntVar shapeId = getModel().intVar("sid", sid);
             IntVar[] coords = new IntVar[dim];
             for (int j = 0; j < dim; j++) {
 
@@ -97,11 +97,11 @@ public final class RandomProblemGenerator {
                 }
 
                 int min = rnd.nextInt(max);
-                coords[j] = VF.enumerated("x" + j, min, max, m);
+                coords[j] = getModel().intVar("x" + j, min, max, false);
             }
-            IntVar start = VF.fixed("start", 1, m);
-            IntVar duration = VF.fixed("duration", 1, m);
-            IntVar end = VF.fixed("end", 1, m);
+            IntVar start = getModel().intVar("start", 1);
+            IntVar duration = getModel().intVar("duration", 1);
+            IntVar end = getModel().intVar("end", 1);
             objects.add(new GeostObject(this.dim, i, shapeId, coords, start, duration, end));
         }
 
@@ -180,7 +180,7 @@ public final class RandomProblemGenerator {
         return sBoxes;
     }
 
-    public Solver getModel() {
+    public Model getModel() {
         return m;
     }
 

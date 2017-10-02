@@ -26,6 +26,7 @@
  */
 package org.chocosolver;
 
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
@@ -33,10 +34,8 @@ import org.chocosolver.solver.constraints.nary.geost.externalConstraints.Externa
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.NonOverlapping;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.chocosolver.solver.search.strategy.ISF;
-import org.chocosolver.solver.trace.Chatterbox;
+import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.chocosolver.util.tools.ArrayUtils;
 
 import java.util.ArrayList;
@@ -117,7 +116,7 @@ public class Tetris {
 
 
 
-        Solver solver = new Solver();
+        Model model = new Model();
 
         int dim = 2;
         List<GeostObject> objects = new ArrayList<>();
@@ -127,14 +126,14 @@ public class Tetris {
         int k = 1;
         for (int j = 0; j < qts.length; j++) {
             for (int i = 0; i < qts[j]; i++) {
-                IntVar shapeId = VF.enumerated("sid_" + k, shapeIds.get(j), solver);
+                IntVar shapeId = model.intVar("sid_" + k, shapeIds.get(j));
                 theShapes.add(shapeId);
                 IntVar[] coords = new IntVar[2];
-                coords[0] = VF.enumerated("X_" + k, 1, X, solver);
-                coords[1] = VF.enumerated("Y_" + k, 1, Y, solver);
+                coords[0] = model.intVar("X_" + k, 1, X, false);
+                coords[1] = model.intVar("Y_" + k, 1, Y, false);
                 coordinates.add(coords[0]);
                 coordinates.add(coords[1]);
-                objects.add(new GeostObject(dim, k++, shapeId, coords, solver.ONE(), solver.ONE(), solver.ONE()));
+                objects.add(new GeostObject(dim, k++, shapeId, coords, model.intVar(1), model.intVar(1), model.intVar(1)));
             }
         }
 
@@ -145,17 +144,15 @@ public class Tetris {
             objOfEctr2[d] = objects.get(d).getObjectId();
         }
 
-        NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.oneToN(dim), objOfEctr2);
+        NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1,dim), objOfEctr2);
         ectr2.add(n2);
 
         Constraint geost = Tutorial.geost(dim, objects, shapes, ectr2);
-        solver.post(geost);
+        model.post(geost);
 
-
-        solver.set(ISF.lexico_LB(coordinates.toArray(new IntVar[coordinates.size()])),
-                ISF.lexico_LB(theShapes.toArray(new IntVar[theShapes.size()])));
-        Chatterbox.showDecisions(solver);
-        Chatterbox.showSolutions(solver);
+        Solver solver = model.getSolver();
+        solver.setSearch(Search.inputOrderLBSearch(coordinates.toArray(new IntVar[coordinates.size()])),
+                Search.inputOrderLBSearch(theShapes.toArray(new IntVar[theShapes.size()])));
         solver.findAllSolutions();
 
     }

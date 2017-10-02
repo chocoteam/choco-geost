@@ -315,7 +315,7 @@ public final class GeometricKernel {
         stp.opt.propag_failed = false;
 
         if (stp.opt.try_propagation) {
-            stp.g_constraint.contradiction(null, "geost");
+            stp.g_constraint.fails();
         }
 
         return true;
@@ -358,7 +358,7 @@ public final class GeometricKernel {
                 // We call FilterObj with the fixed shape sid. To avoid the creation of another object we use worldPush and worldPop. Actually, by doing so, the object o
                 //is modified between worldPush() and worldPop() (where we collect the information we interested to : b, max, min) and restored into its state after worldPop
 
-                solver.set(NoPropagationEngine.SINGLETON);
+                solver.setEngine(NoPropagationEngine.SINGLETON);
                 solver.getEnvironment().worldPush();
 //                solver.worldPushDuringPropagation();
                 o.getShapeId().instantiateTo(sid, this.constraint);
@@ -374,7 +374,7 @@ public final class GeometricKernel {
                 }
 //                solver.worldPopDuringPropagation();
                 solver.getEnvironment().worldPop();
-                solver.set(cengine);
+                solver.setEngine(cengine);
 
                 if (!b) {
                     o.getShapeId().removeValue(sid, this.constraint);

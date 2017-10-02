@@ -278,7 +278,7 @@ public final class DistGeqIC extends ForbiddenRegion {
                 System.out.println("DistGeqIC:" + this + " updateDistance:[" + DVar.getLB() + "," + DVar.getUB() + "]");
             }
             if ((DVar.getLB() > DVar.getUB()) || (DVar.getUB() < DVar.getLB())) {
-                stp.g_constraint.contradiction(null, "geost");
+                stp.g_constraint.fails();
             }
             return true;
         }

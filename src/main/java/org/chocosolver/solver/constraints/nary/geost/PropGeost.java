@@ -1,32 +1,28 @@
 /**
- *  Copyright (c) 1999-2011, Ecole des Mines de Nantes
- *  All rights reserved.
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met:
+ * Copyright (c) 1999-2011, Ecole des Mines de Nantes All rights reserved. Redistribution and use in
+ * source and binary forms, with or without modification, are permitted provided that the following
+ * conditions are met:
  *
- *      * Redistributions of source code must retain the above copyright
- *        notice, this list of conditions and the following disclaimer.
- *      * Redistributions in binary form must reproduce the above copyright
- *        notice, this list of conditions and the following disclaimer in the
- *        documentation and/or other materials provided with the distribution.
- *      * Neither the name of the Ecole des Mines de Nantes nor the
- *        names of its contributors may be used to endorse or promote products
- *        derived from this software without specific prior written permission.
+ * * Redistributions of source code must retain the above copyright notice, this list of conditions
+ * and the following disclaimer. * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the documentation and/or other
+ * materials provided with the distribution. * Neither the name of the Ecole des Mines de Nantes nor
+ * the names of its contributors may be used to endorse or promote products derived from this
+ * software without specific prior written permission.
  *
- *  THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY
- *  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS AND CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 package org.chocosolver.solver.constraints.nary.geost;
 
 import org.chocosolver.memory.IStateInt;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.constraints.PropagatorPriority;
@@ -41,7 +37,6 @@ import org.chocosolver.solver.constraints.nary.geost.util.Pair;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.propagation.IPropagationEngine;
 import org.chocosolver.solver.propagation.NoPropagationEngine;
-import org.chocosolver.solver.search.solution.Solution;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.util.ESat;
@@ -180,8 +175,9 @@ public class PropGeost extends Propagator<IntVar> {
     public ESat isEntailed() {
         if (isCompletelyInstantiated()) {
             boolean b = false;
+            Solver solver = model.getSolver();
             IPropagationEngine cengine = solver.getEngine();
-            solver.set(NoPropagationEngine.SINGLETON);
+            solver.setEngine(NoPropagationEngine.SINGLETON);
             solver.getEnvironment().worldPush();
             try {
                 b = geometricKernel.filterCtrs(cst.getDIM(), oIDs,
@@ -190,7 +186,7 @@ public class PropGeost extends Propagator<IntVar> {
                 b = false;
             }
             solver.getEnvironment().worldPop();
-            solver.set(cengine);
+            solver.setEngine(cengine);
             return ESat.eval(b);
         }
         return ESat.UNDEFINED;
@@ -205,7 +201,6 @@ public class PropGeost extends Propagator<IntVar> {
             filterWithGreedyMode();
 //            stp.opt.timefilterWithGreedyMode += ((System.nanoTime() / 1000000) - tmpTime);
         }
-
     }
 
     private void filterWithGreedyMode() throws ContradictionException {
@@ -232,17 +227,18 @@ public class PropGeost extends Propagator<IntVar> {
 
             long tmpTime = (System.nanoTime() / 1000000);
             //s.getSearchStrategy().recordSolution();
-            Solution sol = new Solution();
-
-            sol.record(solver);
+            Solution sol = new Solution(model, model.retrieveIntVars(true));
+            sol.record();
             stp.opt.handleSolution1 += ((System.nanoTime() / 1000000) - tmpTime);
             tmpTime = (System.nanoTime() / 1000000);
             s.getEnvironment().worldPop();  //Come back to the state before propagation
             stp.opt.handleSolution2 += ((System.nanoTime() / 1000000) - tmpTime);
             tmpTime = (System.nanoTime() / 1000000);
             //s.getSearchStrategy().restoreBestSolution();
-
-            sol.restore(solver);
+            for(int i = 0; i < model.retrieveIntVars(true).length; i++){
+                sol.restore();
+                vars[i].instantiateTo(sol.getIntVal(vars[i]), this);
+            }
             stp.opt.handleSolution3 += ((System.nanoTime() / 1000000) - tmpTime);
         }
     }
@@ -251,7 +247,7 @@ public class PropGeost extends Propagator<IntVar> {
     private void filterWithoutGreedyMode() throws ContradictionException {
         if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithoutGreedyMode()");
         if (!geometricKernel.filterCtrs(cst.getDIM(), oIDs, stp.getConstraints()))
-            this.contradiction(null, "geost");
+            this.fails();
     }
 
     public Constants getCst() {

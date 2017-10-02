@@ -25,9 +25,9 @@ package org.chocosolver; /**
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
-import org.chocosolver.solver.constraints.ICF;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
 import org.chocosolver.solver.constraints.nary.geost.GeostOptions;
 import org.chocosolver.solver.constraints.nary.geost.PropGeost;
@@ -39,9 +39,8 @@ import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.constraints.nary.geost.util.InputParser;
 import org.chocosolver.solver.constraints.nary.geost.util.RandomProblemGenerator;
-import org.chocosolver.solver.search.strategy.ISF;
+import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.variables.VF;
 import org.chocosolver.util.ESat;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -95,7 +94,7 @@ public class Tutorial {
             vars[(i * (dim + 4)) + dim + 2] = objects.get(i).getDuration();
             vars[(i * (dim + 4)) + dim + 3] = objects.get(i).getEnd();
         }
-        Solver solver = vars[0].getSolver();
+        Model model = vars[0].getModel();
         int ind = 0;
         for (int i : distVars) {
             ExternalConstraint ectr = eCtrs.get(i);
@@ -115,9 +114,9 @@ public class Tutorial {
 
         PropGeost propgeost;
         if (ctrlVs == null) {
-            propgeost = new PropGeost(vars/*solver variables*/, dim, objects, shiftedBoxes, eCtrs, false, opt.included, solver);
+            propgeost = new PropGeost(vars/*model variables*/, dim, objects, shiftedBoxes, eCtrs, false, opt.included, model.getSolver());
         } else {
-            propgeost = new PropGeost(vars, dim, objects, shiftedBoxes, eCtrs, ctrlVs, opt.memoisation, opt.included, opt.increment, solver);
+            propgeost = new PropGeost(vars, dim, objects, shiftedBoxes, eCtrs, ctrlVs, opt.memoisation, opt.included, opt.increment, model.getSolver());
         }
 
         Constraint geost = new Constraint("Geost", propgeost);
@@ -147,20 +146,20 @@ public class Tutorial {
 
         for (int seed = 0; seed < 20; seed++) {
             //create the choco problem
-            Solver solver = new Solver();
+            Model model = new Model();
 
             //Create Objects
             List<GeostObject> obj2 = new ArrayList<>();
 
             for (int i = 0; i < nbOfObj; i++) {
-                IntVar shapeId = VF.fixed("sid", i, solver);
+                IntVar shapeId = model.intVar("sid", i);
                 IntVar coords[] = new IntVar[this.dim];
                 for (int j = 0; j < coords.length; j++) {
-                    coords[j] = VF.bounded("x" + j, 0, 2, solver);
+                    coords[j] = model.intVar("x" + j, 0, 2, true);
                 }
-                IntVar start = VF.fixed("start", 1, solver);
-                IntVar duration = VF.fixed("duration", 1, solver);
-                IntVar end = VF.fixed("end", 1, solver);
+                IntVar start = model.intVar("start", 1);
+                IntVar duration = model.intVar("duration", 1);
+                IntVar end = model.intVar("end", 1);
                 obj2.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
             }
 
@@ -197,11 +196,12 @@ public class Tutorial {
 
             //create the geost constraint object
             Constraint geost = geost(this.dim, obj2, sb2, ectr2);
-            solver.post(geost);
+            model.post(geost);
             //post the geost constraint to the choco problem
-            solver.set((ISF.random_bound(solver.retrieveIntVars(), 1)));
+            Solver solver = model.getSolver();
+            solver.setSearch((Search.randomSearch(model.retrieveIntVars(true), 1)));
             solver.findAllSolutions();
-            Assert.assertEquals(solver.getMeasures().getSolutionCount(), 9828, "number of solutions");
+            Assert.assertEquals(solver.getSolutionCount(), 9828, "number of solutions");
         }
 
     }
@@ -213,11 +213,11 @@ public class Tutorial {
             //nb of objects, shapes, shifted boxes and maxLength respectively
             //The nb of Obj should be equal to nb Of shapes for NOW. as For the number of the shifted Boxes it should be greater or equal to thhe nb of Objects
 
-            RandomProblemGenerator rp = new RandomProblemGenerator(this.dim, 7, 7, 9, 25);
+            RandomProblemGenerator rp = new RandomProblemGenerator(this.dim, 7, 7, 9, 25, seed);
 
             rp.generateProb();
 
-            Solver m = rp.getModel();
+            Model m = rp.getModel();
 
             List<ExternalConstraint> ectr = new ArrayList<>();
             int[] ectrDim = new int[this.dim];
@@ -235,9 +235,11 @@ public class Tutorial {
 
             Constraint geost = geost(this.dim, rp.getObjects(), rp.getSBoxes(), ectr);
             m.post(geost);
-            m.set(ISF.random_bound(m.retrieveIntVars(), seed));
-            m.findAllSolutions();
-            Assert.assertEquals(0, m.getMeasures().getSolutionCount(), "number of solutions");
+            Solver solver = m.getSolver();
+            solver.setSearch(Search.randomSearch(m.retrieveIntVars(true), seed));
+            solver.showSolutions();
+            solver.findSolution();
+            Assert.assertEquals(0, solver.getSolutionCount(), "number of solutions");
         }
     }
 
@@ -266,7 +268,7 @@ public class Tutorial {
 
         InputParser.GeostProblem gp = new InputParser.GeostProblem(objects, shapes, shiftedBoxes);
         for (int seed = 0; seed < 20; seed++) {
-            Solver m = new Solver();
+            Model m = new Model();
             parser = new InputParser(gp, dim);
             try {
                 parser.parse(m);
@@ -328,12 +330,12 @@ public class Tutorial {
             m.post(geost);
 
             for (int i = 0; i < parser.getObjects().size() - 2; i++) {
-                m.post(ICF.lex_less(parser.getObjects().get(i).getCoordinates(), parser.getObjects().get(i + 1).getCoordinates()));
+                m.lexLess(parser.getObjects().get(i).getCoordinates(), parser.getObjects().get(i + 1).getCoordinates()).post();
             }
-
-            m.set(ISF.random_bound(m.retrieveIntVars(), seed));
-            m.findAllSolutions();
-            Assert.assertEquals(m.getMeasures().getSolutionCount(), 2);
+            Solver solver = m.getSolver();
+            solver.setSearch(Search.randomSearch(m.retrieveIntVars(true), seed));
+            solver.findAllSolutions();
+            Assert.assertEquals(solver.getSolutionCount(), 2);
         }
 
     }
@@ -346,20 +348,20 @@ public class Tutorial {
         int heights[] = {1, 2, 4};
 
         int nbOfObj = 3;
-        Solver m = new Solver();
+        Model model = new Model();
 
         //Create Objects
         List<GeostObject> obj2 = new ArrayList<>();
 
         for (int i = 0; i < nbOfObj; i++) {
-            IntVar shapeId = VF.fixed("sid", 0, m);
+            IntVar shapeId = model.intVar("sid", 0);
             IntVar coords[] = new IntVar[this.dim];
             for (int j = 0; j < coords.length; j++) {
-                coords[j] = VF.enumerated("x" + j, 0, 2, m);
+                coords[j] = model.intVar("x" + j, 0, 2, false);
             }
-            IntVar start = VF.fixed("start", 1, m);
-            IntVar duration = VF.fixed("duration", 1, m);
-            IntVar end = VF.fixed("end", 1, m);
+            IntVar start = model.intVar("start", 1);
+            IntVar duration = model.intVar("duration", 1);
+            IntVar end = model.intVar("end", 1);
             obj2.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
         }
         for (int i = 0; i < obj2.size(); i++) {
@@ -394,12 +396,12 @@ public class Tutorial {
         ectr2.add(n2);
 
         Constraint geost2 = geost(this.dim, obj2, sb2, ectr2);
-        m.post(geost2);
+        model.post(geost2);
         //Here the solve will only do a test for the first constraint and not the second.
         //However for our purposes this is not important. If it is just change the code
         //of solve to take 2 constraints as parameters and then run the two solution testers
-        m.findAllSolutions();
-        Assert.assertEquals(m.getMeasures().getSolutionCount(), 7290);
+        model.getSolver().findAllSolutions();
+        Assert.assertEquals(model.getSolver().getSolutionCount(), 7290);
     }
 
 
@@ -446,20 +448,20 @@ public class Tutorial {
         int nbOfObj = 10;
 
         //create the choco problem
-        Solver m = new Solver();
+        Model model = new Model();
 
         //Create Objects
         List<GeostObject> obj = new ArrayList<>();
 
         for (int i = 0; i < nbOfObj; i++) {
-            IntVar shapeId = VF.fixed("sid", i, m);
+            IntVar shapeId = model.intVar("sid", i);
             IntVar coords[] = new IntVar[dim];
-            coords[0] = VF.enumerated("x", domOrigins[i][0], domOrigins[i][1], m);
-            coords[1] = VF.enumerated("y", domOrigins[i][2], domOrigins[i][3], m);
+            coords[0] = model.intVar("x", domOrigins[i][0], domOrigins[i][1], false);
+            coords[1] = model.intVar("y", domOrigins[i][2], domOrigins[i][3], false);
 
-            IntVar start = VF.fixed("start", 1, m);
-            IntVar duration = VF.fixed("duration", 1, m);
-            IntVar end = VF.fixed("end", 1, m);
+            IntVar start = model.intVar("start", 1);
+            IntVar duration = model.intVar("duration", 1);
+            IntVar end = model.intVar("end", 1);
             obj.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
 
 
@@ -505,10 +507,10 @@ public class Tutorial {
         //Geost_Constraint geost = new Geost_Constraint(vars, dim, obj, sb, ectr);
 
         //post the geost constraint to the choco problem
-        m.post(geost);
+        model.post(geost);
 
         // solve the probem
-        m.findSolution();
+        model.getSolver().findSolution();
 
         for (int i = 0; i < obj.size(); i++) {
             GeostObject o = obj.get(i);
@@ -536,25 +538,25 @@ public class Tutorial {
         int nbOfObj = 3;
 
         // create the choco problem
-        Solver m = new Solver();
+        Model model = new Model();
 
         // Create Objects
         List<GeostObject> objects = new ArrayList<>();
 
         for (int i = 0; i < nbOfObj; i++) {
-            IntVar shapeId = VF.enumerated("sid_" + i, domShapes[i][0], domShapes[i][1], m);
+            IntVar shapeId = model.intVar("sid_" + i, domShapes[i][0], domShapes[i][1], false);
             IntVar coords[] = new IntVar[dim];
-            coords[0] = VF.enumerated("x_" + i, domOrigins[i][0], domOrigins[i][1], m);
-            coords[1] = VF.enumerated("y_" + i, domOrigins[i][2], domOrigins[i][3], m);
+            coords[0] = model.intVar("x_" + i, domOrigins[i][0], domOrigins[i][1], false);
+            coords[1] = model.intVar("y_" + i, domOrigins[i][2], domOrigins[i][3], false);
 
             // ++ Modification
             // Additional Constraint
-            m.post(ICF.arithm(coords[0], ">=", 1));
+            model.arithm(coords[0], ">=", 1).post();
             // -- Modification
 
-            IntVar start = VF.fixed("start", 0, m);
-            IntVar duration = VF.fixed("duration", 1, m);
-            IntVar end = VF.fixed("end", 1, m);
+            IntVar start = model.intVar("start", 0);
+            IntVar duration = model.intVar("duration", 1);
+            IntVar end = model.intVar("end", 1);
             objects.add(new GeostObject(dim, i, shapeId, coords, start, duration, end));
         }
 
@@ -592,12 +594,12 @@ public class Tutorial {
         Constraint geost = geost(dim, objects, sb, ectr);
 
         // post the geost constraint to the choco problem
-        m.post(geost);
+        model.post(geost);
 
         // solve the probem
-        m.findSolution();
+        model.getSolver().findSolution();
 
-        Assert.assertSame(ESat.FALSE, m.isFeasible(), "No solution expected");
+        Assert.assertSame(ESat.FALSE, model.getSolver().isFeasible(), "No solution expected");
     }
 
     @Test
@@ -610,7 +612,7 @@ public class Tutorial {
                 int maxX = width - 5;
                 int maxY = height - 5;
 
-                Solver m = new Solver();
+                Model model = new Model();
 
                 List<GeostObject> geosts = new ArrayList<>();
                 List<ShiftedBox> sb = new ArrayList<>();
@@ -618,15 +620,15 @@ public class Tutorial {
                 List<IntVar> x = new ArrayList<>();
                 List<IntVar> y = new ArrayList<>();
                 for (int a = 0; a < 16; a++) {
-                    IntVar varX = VF.enumerated("img_" + a + "_x", 0, maxX, m);
-                    IntVar varY = VF.enumerated("img_" + a + "_y", 0, maxY, m);
+                    IntVar varX = model.intVar("img_" + a + "_x", 0, maxX, false);
+                    IntVar varY = model.intVar("img_" + a + "_y", 0, maxY, false);
                     x.add(varX);
 
                     y.add(varY);
                     IntVar coordinates[] = new IntVar[]{varX, varY};
 
-                    geosts.add(new GeostObject(2, a, VF.fixed(a, m), coordinates, VF.fixed(0, m), VF.fixed(1, m),
-                            VF.fixed(1, m)));
+                    geosts.add(new GeostObject(2, a, model.intVar(a), coordinates, model.intVar(0), model.intVar(1),
+                            model.intVar(1)));
 
                     sb.add(new ShiftedBox(a, new int[]{0, 0}, new int[]{5, 5}));
                 }
@@ -649,9 +651,9 @@ public class Tutorial {
                 // Definition of the GEOST constraint
                 GeostOptions.increment = inc;
                 Constraint geost = geost(2, geosts, sb, ectr, ctrlVs);
-                m.post(geost);
+                model.post(geost);
 
-                Assert.assertTrue(m.findSolution());
+                Assert.assertNotNull(model.getSolver().findSolution());
                 inc ^= true;
             } while (!inc);
         }
@@ -660,7 +662,7 @@ public class Tutorial {
 
     @Test
     public void testNonOverlap() {
-        Solver model = new Solver();
+        Model model = new Model();
 
         List<GeostObject> geosts = new ArrayList<>();
         Map<Integer, ShiftedBox> boxesById = new HashMap<>();
@@ -670,15 +672,15 @@ public class Tutorial {
         ShiftedBox block = new ShiftedBox(currentShapeId, new int[]{0, 0}, new int[]{20, 1});
         boxesById.put(currentShapeId, block);
 
-        IntVar[] fixedCoordinates = new IntVar[]{VF.fixed(0, model), VF.fixed(0, model)};
-        IntVar[] variableCoordinates = new IntVar[]{VF.fixed("variable", 0, model), VF.fixed(0, model)};
+        IntVar[] fixedCoordinates = new IntVar[]{model.intVar(0), model.intVar(0)};
+        IntVar[] variableCoordinates = new IntVar[]{model.intVar("variable", 0), model.intVar(0)};
 
 
-        geosts.add(new GeostObject(2, 0, VF.fixed(currentShapeId, model), fixedCoordinates, VF.fixed(0, model),
-                VF.fixed(1, model), VF.fixed(1, model)));
+        geosts.add(new GeostObject(2, 0, model.intVar(currentShapeId), fixedCoordinates, model.intVar(0),
+                model.intVar(1), model.intVar(1)));
 
-        geosts.add(new GeostObject(2, 1, VF.fixed(currentShapeId, model), fixedCoordinates, VF.fixed(0, model),
-                VF.fixed(1, model), VF.fixed(1, model)));
+        geosts.add(new GeostObject(2, 1, model.intVar(currentShapeId), fixedCoordinates, model.intVar(0),
+                model.intVar(1), model.intVar(1)));
 
         List<ExternalConstraint> ectr = new ArrayList<>();
 
@@ -698,7 +700,7 @@ public class Tutorial {
         Constraint geost = geost(2, geosts, new ArrayList<>(boxesById.values()), ectr, ctrlVs);
         model.post(geost);
 
-        Assert.assertEquals(model.findSolution(), false);
+        Assert.assertNull(model.getSolver().findSolution());
     }
 
     @Test
@@ -722,20 +724,20 @@ public class Tutorial {
 
         // Both labels 1 and 2 will have a single shape each
 
-        Solver m = new Solver();
+        Model model = new Model();
 
-        IntVar X1 = VF.enumerated("X1", 4, 7, m);
-        IntVar Y1 = VF.enumerated("Y1", 1, 4, m);
+        IntVar X1 = model.intVar("X1", 4, 7, false);
+        IntVar Y1 = model.intVar("Y1", 1, 4, false);
         IntVar[] p1 = new IntVar[]{X1, Y1};
-        GeostObject lab1 = new GeostObject(2, 1, VF.fixed(1, m), p1,
-                VF.fixed(0, m), VF.fixed(1, m), VF.fixed(1, m));
+        GeostObject lab1 = new GeostObject(2, 1, model.intVar(1), p1,
+                model.intVar(0), model.intVar(1), model.intVar(1));
         ShiftedBox sb1 = new ShiftedBox(1, new int[]{0, 0}, new int[]{2, 2});
 
-        IntVar X2 = VF.enumerated("X2", 0, 4, m);
-        IntVar Y2 = VF.enumerated("Y2", 3, 3, m);
+        IntVar X2 = model.intVar("X2", 0, 4, false);
+        IntVar Y2 = model.intVar("Y2", 3, 3, false);
         IntVar[] p2 = new IntVar[]{X2, Y2};
-        GeostObject lab2 = new GeostObject(2, 2, VF.fixed(2, m), p2,
-                VF.fixed(0, m), VF.fixed(1, m), VF.fixed(1, m));
+        GeostObject lab2 = new GeostObject(2, 2, model.intVar(2), p2,
+                model.intVar(0), model.intVar(1), model.intVar(1));
         ShiftedBox sb2 = new ShiftedBox(2, new int[]{0, 0}, new int[]{4, 2});
 
         List<GeostObject> gos = new ArrayList<>();
@@ -751,9 +753,9 @@ public class Tutorial {
         ectr.add(new NonOverlapping(Constants.NON_OVERLAPPING,
                 ectrDim, objOfEctr));
 
-        m.post(geost(2, gos, SBs, ectr));
+        model.post(geost(2, gos, SBs, ectr));
         System.out.println("Avant 'Solver.solve'");
-        m.findSolution();
+        model.getSolver().findSolution();
         System.out.println("Apr�s 'Solver.solve'");
     }
 
