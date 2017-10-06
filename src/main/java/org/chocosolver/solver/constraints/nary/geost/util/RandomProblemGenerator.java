@@ -51,7 +51,7 @@ public final class RandomProblemGenerator {
         }
 
 
-        Random rnd = new Random();
+        Random rnd = new Random(seed);
         int[] maxDomain = new int[dim]; //maximum value of o.x in each dimension
 
         //first generate the shape IDs

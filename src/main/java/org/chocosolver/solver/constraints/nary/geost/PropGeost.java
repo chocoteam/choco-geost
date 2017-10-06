@@ -223,7 +223,6 @@ public class PropGeost extends Propagator<IntVar> {
             tmpTime = (System.nanoTime() / 1000000);
             //s.getSearchStrategy().restoreBestSolution();
             for(int i = 0; i < model.retrieveIntVars(true).length; i++){
-                sol.restore();
                 vars[i].instantiateTo(sol.getIntVal(vars[i]), this);
             }
             stp.opt.handleSolution3 += ((System.nanoTime() / 1000000) - tmpTime);
