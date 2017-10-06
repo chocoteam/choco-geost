@@ -10,6 +10,8 @@ function guess() {
     echo "${v%.*}.$((${v##*.}+1))-SNAPSHOT"
 }
 
+set -ex
+
 VERSION=$(getVersionToRelease)
 NEXT=$(guess $VERSION)
 TAG="choco-geost-${VERSION}"

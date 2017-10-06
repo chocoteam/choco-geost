@@ -1,3 +1,11 @@
+/**
+ * This file is part of choco-geost, https://github.com/chocoteam/choco-geost
+ *
+ * Copyright (c) 2017-10-06T08:11:10Z, IMT Atlantique. All rights reserved.
+ *
+ * Licensed under the BSD 4-clause license.
+ * See LICENSE file in the project root for full license information.
+ */
 package org.chocosolver; /**
  *  Copyright (c) 1999-2011, Ecole des Mines de Nantes
  *  All rights reserved.
