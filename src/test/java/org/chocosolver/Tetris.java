@@ -219,7 +219,7 @@ public class Tetris {
     private class J2 extends Shape {
         public J2() {
             offsets.add(new int[]{0, 0});
-            boxes.add(new int[]{1, 3});
+            boxes.add(new int[]{3, 1});
             offsets.add(new int[]{0, 1});
             boxes.add(new int[]{1, 1});
         }
