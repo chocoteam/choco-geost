@@ -88,7 +88,6 @@ public final class GeometricKernel {
         this.solver = aSolver;
         this.constraint = aConstraint;
         this.mengine = (MutePropagationEngine) solver.getEngine();
-        System.out.println("memo_active=" + memo_);
     }
 
     /**
