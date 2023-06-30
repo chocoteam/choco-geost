@@ -2,7 +2,7 @@
 
     This file is part of choco-geost, https://github.com/chocoteam/choco-geost
 
-    Copyright (c) 2017, IMT Atlantique. All rights reserved.
+    Copyright (c) 2023, IMT Atlantique. All rights reserved.
 
     Licensed under the BSD 4-clause license.
     See LICENSE file in the project root for full license information.
@@ -14,7 +14,7 @@
 
     <groupId>org.choco-solver</groupId>
     <artifactId>choco-geost</artifactId>
-    <version>4.0.6-SNAPSHOT</version>
+    <version>4.0.6</version>
     <packaging>jar</packaging>
 
     <name>Geost constraint, developed for Choco3</name>
