@@ -12,6 +12,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
+import org.chocosolver.solver.constraints.nary.geost.GeostBuilder;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.ExternalConstraint;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.NonOverlapping;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
@@ -61,9 +62,10 @@ public class TetrisTest {
         NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1, 2), objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost = Tutorial.geost(2, objects, shapes, ectr2);
+        Constraint geost = GeostBuilder.geost(2, objects, shapes, ectr2);
         model.post(geost);
         Solver solver = model.getSolver();
+        solver.showDecisions();
         solver.setSearch(Search.inputOrderLBSearch(coords1[0], coords2[0]));
         solver.findAllSolutions();
         Assert.assertEquals(solver.getSolutionCount(), 0);
@@ -101,7 +103,7 @@ public class TetrisTest {
         NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1, 2), objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost = Tutorial.geost(2, objects, shapes, ectr2);
+        Constraint geost = GeostBuilder.geost(2, objects, shapes, ectr2);
         model.post(geost);
         Solver solver = model.getSolver();
         solver.setSearch(Search.inputOrderLBSearch(coords1[0], coords2[0]));
@@ -142,7 +144,7 @@ public class TetrisTest {
         NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1, 2), objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost = Tutorial.geost(2, objects, shapes, ectr2);
+        Constraint geost = GeostBuilder.geost(2, objects, shapes, ectr2);
         model.post(geost);
         Solver solver = model.getSolver();
         solver.setSearch(Search.inputOrderLBSearch(coords1[0], coords2[0]));
@@ -183,7 +185,7 @@ public class TetrisTest {
         NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1, 2), objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost = Tutorial.geost(2, objects, shapes, ectr2);
+        Constraint geost = GeostBuilder.geost(2, objects, shapes, ectr2);
         model.post(geost);
         Solver solver = model.getSolver();
         solver.findAllSolutions();
@@ -224,7 +226,7 @@ public class TetrisTest {
         NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1, 2), objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost = Tutorial.geost(2, objects, shapes, ectr2);
+        Constraint geost = GeostBuilder.geost(2, objects, shapes, ectr2);
         model.post(geost);
         Solver solver = model.getSolver();
         solver.findAllSolutions();

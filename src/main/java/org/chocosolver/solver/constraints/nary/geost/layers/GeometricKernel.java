@@ -20,11 +20,11 @@ import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Point;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.Region;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
 import org.chocosolver.solver.constraints.nary.geost.internalConstraints.*;
+import org.chocosolver.solver.constraints.nary.geost.util.MutePropagationEngine;
 import org.chocosolver.solver.constraints.nary.geost.util.Pair;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.exception.SolverException;
-import org.chocosolver.solver.propagation.IPropagationEngine;
-import org.chocosolver.solver.propagation.NoPropagationEngine;
+import org.chocosolver.solver.propagation.PropagationEngine;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.util.*;
@@ -62,7 +62,7 @@ public final class GeometricKernel {
     private GeostNumeric engine = null;
     private final Solver solver;
     private final PropGeost constraint;
-
+    private final MutePropagationEngine mengine;
 
     /**
      * Creates an ExternalLayer instance for a specific Constants class, a specific Setup class, a specific ExternalLayer class and a specific
@@ -87,6 +87,7 @@ public final class GeometricKernel {
         included = included_;
         this.solver = aSolver;
         this.constraint = aConstraint;
+        this.mengine = (MutePropagationEngine) solver.getEngine();
         System.out.println("memo_active=" + memo_);
     }
 
@@ -329,7 +330,7 @@ public final class GeometricKernel {
             }
 
             //
-            IPropagationEngine cengine = solver.getEngine();
+            PropagationEngine cengine = solver.getEngine();
             for (int sid = o.getShapeId().getLB(); sid <= o.getShapeId().getUB(); sid = o.getShapeId().nextValue(sid)) {
 
                 int[] max = new int[k];
@@ -339,7 +340,7 @@ public final class GeometricKernel {
                 // We call FilterObj with the fixed shape sid. To avoid the creation of another object we use worldPush and worldPop. Actually, by doing so, the object o
                 //is modified between worldPush() and worldPop() (where we collect the information we interested to : b, max, min) and restored into its state after worldPop
 
-                solver.setEngine(NoPropagationEngine.SINGLETON);
+                mengine.mute();
                 solver.getEnvironment().worldPush();
 //                solver.worldPushDuringPropagation();
                 o.getShapeId().instantiateTo(sid, this.constraint);
@@ -355,7 +356,7 @@ public final class GeometricKernel {
                 }
 //                solver.worldPopDuringPropagation();
                 solver.getEnvironment().worldPop();
-                solver.setEngine(cengine);
+                mengine.unmute();
 
                 if (!b) {
                     o.getShapeId().removeValue(sid, this.constraint);

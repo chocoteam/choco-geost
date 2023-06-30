@@ -13,7 +13,7 @@ import org.chocosolver.solver.constraints.nary.geost.dataStructures.HeapDescendi
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.ExternalConstraint;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.ShiftedBox;
-import org.chocosolver.solver.propagation.IPropagationEngine;
+import org.chocosolver.solver.propagation.PropagationEngine;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -36,7 +36,7 @@ public final class Setup {
 
     public GeostOptions opt = new GeostOptions();
 
-    public final IPropagationEngine propagationEngine;
+    public final PropagationEngine propagationEngine;
 
     public final PropGeost g_constraint;
 
@@ -47,7 +47,7 @@ public final class Setup {
      * @param propagationEngine
      * @param constraint
      */
-    public Setup(Constants c, IPropagationEngine propagationEngine, PropGeost constraint) {
+    public Setup(Constants c, PropagationEngine propagationEngine, PropGeost constraint) {
         cst = c;
         this.propagationEngine = propagationEngine;
         this.g_constraint = constraint;

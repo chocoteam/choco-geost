@@ -1,8 +1,8 @@
 /**
  * This file is part of choco-geost, https://github.com/chocoteam/choco-geost
- *
+ * <p>
  * Copyright (c) 2017, IMT Atlantique. All rights reserved.
- *
+ * <p>
  * Licensed under the BSD 4-clause license.
  * See LICENSE file in the project root for full license information.
  */
@@ -20,10 +20,9 @@ import org.chocosolver.solver.constraints.nary.geost.internalConstraints.Interna
 import org.chocosolver.solver.constraints.nary.geost.layers.ExternalLayer;
 import org.chocosolver.solver.constraints.nary.geost.layers.GeometricKernel;
 import org.chocosolver.solver.constraints.nary.geost.layers.IntermediateLayer;
+import org.chocosolver.solver.constraints.nary.geost.util.MutePropagationEngine;
 import org.chocosolver.solver.constraints.nary.geost.util.Pair;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.propagation.IPropagationEngine;
-import org.chocosolver.solver.propagation.NoPropagationEngine;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.events.IntEventType;
 import org.chocosolver.util.ESat;
@@ -38,6 +37,7 @@ import java.util.List;
  * @since 17/01/2014
  */
 public class PropGeost extends Propagator<IntVar> {
+    private static MutePropagationEngine fakePropagationEngine;
     /**
      * Array of objects ids.
      * initial order is not preserved in greedy mode, due to iteration over fixed objects.
@@ -57,6 +57,7 @@ public class PropGeost extends Propagator<IntVar> {
     private int greedyMode = 0;
     boolean increment = false;
     List<int[]> ctrlVs;
+    private final MutePropagationEngine mengine;
 
     /**
      * Creates a geost constraint with the given parameters.
@@ -96,6 +97,7 @@ public class PropGeost extends Propagator<IntVar> {
         lastNonFixedO = solver.getEnvironment().makeInt(oIDs.length);
 
         this.s = solver;
+        this.mengine = (MutePropagationEngine) solver.getEngine();
         this.greedyMode = 1;
         this.increment = increment_;
 
@@ -140,7 +142,7 @@ public class PropGeost extends Propagator<IntVar> {
         lastNonFixedO = solver.getEnvironment().makeInt(oIDs.length);
 
         this.s = solver;
-
+        this.mengine = (MutePropagationEngine) solver.getEngine();
     }
 
     @Override
@@ -161,10 +163,9 @@ public class PropGeost extends Propagator<IntVar> {
     @Override
     public ESat isEntailed() {
         if (isCompletelyInstantiated()) {
-            boolean b = false;
+            boolean b;
             Solver solver = model.getSolver();
-            IPropagationEngine cengine = solver.getEngine();
-            solver.setEngine(NoPropagationEngine.SINGLETON);
+            mengine.mute();
             solver.getEnvironment().worldPush();
             try {
                 b = geometricKernel.filterCtrs(cst.getDIM(), oIDs,
@@ -173,7 +174,7 @@ public class PropGeost extends Propagator<IntVar> {
                 b = false;
             }
             solver.getEnvironment().worldPop();
-            solver.setEngine(cengine);
+            mengine.unmute();
             return ESat.eval(b);
         }
         return ESat.UNDEFINED;
@@ -222,7 +223,7 @@ public class PropGeost extends Propagator<IntVar> {
             stp.opt.handleSolution2 += ((System.nanoTime() / 1000000) - tmpTime);
             tmpTime = (System.nanoTime() / 1000000);
             //s.getSearchStrategy().restoreBestSolution();
-            for(int i = 0; i < model.retrieveIntVars(true).length; i++){
+            for (int i = 0; i < model.retrieveIntVars(true).length; i++) {
                 vars[i].instantiateTo(sol.getIntVal(vars[i]), this);
             }
             stp.opt.handleSolution3 += ((System.nanoTime() / 1000000) - tmpTime);

@@ -12,6 +12,7 @@ import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Constraint;
 import org.chocosolver.solver.constraints.nary.geost.Constants;
+import org.chocosolver.solver.constraints.nary.geost.GeostBuilder;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.ExternalConstraint;
 import org.chocosolver.solver.constraints.nary.geost.externalConstraints.NonOverlapping;
 import org.chocosolver.solver.constraints.nary.geost.geometricPrim.GeostObject;
@@ -129,7 +130,7 @@ public class Tetris {
         NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ArrayUtils.array(1,dim), objOfEctr2);
         ectr2.add(n2);
 
-        Constraint geost = Tutorial.geost(dim, objects, shapes, ectr2);
+        Constraint geost = GeostBuilder.geost(dim, objects, shapes, ectr2);
         model.post(geost);
 
         Solver solver = model.getSolver();
